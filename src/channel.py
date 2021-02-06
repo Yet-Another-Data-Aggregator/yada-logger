@@ -1,7 +1,3 @@
-class ScanException(Exception):
-    pass
-
-
 class ChannelManager:
     def __init__(self):
         self.channels = {}
@@ -14,6 +10,8 @@ class ChannelManager:
 
 
 class Channel:
+    """Channel represents the logic that converts sensor data into a logged value."""
+
     def __init__(self, name, channel_type, read_rate):
         self.name = name
         self.channel_type = channel_type
@@ -30,17 +28,20 @@ class Channel:
         }
 
     def scan(self):
-        """Should return a map with the name of the value and the actual value"""
+        """This method generates the actual value to be logged. The return type should be a dict with string keys and
+        values that are serializable. Any exceptions that occur while this method is running will be caught and
+        logged in place of a data value."""
         pass
 
     def log(self):
+        """This method runs scan and handles the logging of the values."""
         try:
             value = self.scan()
 
             self.last_value = value
 
             # TODO log value
-        except ScanException as e:
+        except Exception as e:
             print(e)
 
 
