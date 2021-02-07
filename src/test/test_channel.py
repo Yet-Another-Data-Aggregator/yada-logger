@@ -1,5 +1,3 @@
-from unittest import TestCase
-
 from src.channel import Channel
 
 
@@ -28,7 +26,7 @@ class LogIntervalChannel(Channel):
         return {"integer": 1}
 
 
-class TestChannel(TestCase):
+class TestChannel:
     def test_scan_value_is_not_null(self):
         test_channel = IntChannel("test_int_channel", "int", 5)
 
