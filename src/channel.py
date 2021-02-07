@@ -29,7 +29,7 @@ class Channel:
 
     def next_log_interval(self):
         """Generator that returns the time in milliseconds to wait until the next log. Default is 5 minutes."""
-        yield 1000 * 60 * 5
+        return 1000 * 60 * 5
 
     def scan(self):
         """This method generates the actual value to be logged. The return type should be a dict with string keys and
