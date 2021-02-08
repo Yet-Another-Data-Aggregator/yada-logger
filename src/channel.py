@@ -1,3 +1,7 @@
+from pathlib import Path
+
+import file_utils
+
 class ChannelManager:
     def __init__(self):
         self.channels = {}
@@ -12,19 +16,24 @@ class ChannelManager:
 class Channel:
     """Channel represents the logic that converts sensor data into a logged value."""
 
-    def __init__(self, name, channel_type, read_rate):
+    def __init__(self, name, cache_size):
         self.name = name
-        self.channel_type = channel_type
-        self.read_rate = read_rate
-        self.last_value = {}
+        self.cache_size = cache_size
+        self.cache = []
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(
+            config.name.replace("channel/", ""),
+            config.get("cache_size", 0),
+        )
 
     def __repr__(self):
-        return f"Device[name: {self.name}, channel_type: {self.channel_type}, read_rate: {self.read_rate}]"
+        return f"Channel[name: {self.name}, cache_size: {self.cache_size}, cache: {self.cache}]"
 
     def write_to_config(self, config):
         config[f"channel/{self.name}"] = {
-            "channel_type": self.channel_type,
-            "read_rate": self.read_rate
+            "cache_size": self.cache_size
         }
 
     def next_log_interval(self):
@@ -38,20 +47,15 @@ class Channel:
         pass
 
     def log(self):
-        """This method runs scan and handles the logging of the values."""
+        """Runs scan and adds value to cache"""
         try:
             value = self.scan()
 
-            self.last_value = value
+            # Add value to cache and pop if cache has reached max size
+            if len(self.cache) >= self.cache_size:
+                self.cache.pop()
+            self.cache.append(value)
 
-            # TODO log value
+            return value
         except Exception as e:
-            print(e)
-
-
-def from_config(config):
-    return Channel(
-        config.name.replace("channel/", ""),
-        config.get("channel_type", ""),
-        config.get("read_rate", 60000),
-    )
+            raise e
