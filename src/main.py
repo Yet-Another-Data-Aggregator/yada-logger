@@ -19,7 +19,9 @@ if __name__ == '__main__':
     now = time.time()
 
     while running:
-        # TODO run channels and log
+        wait_time = channel_manager.run_channels()
+
+        time.sleep(wait_time)
 
         if time.time() - now > FIVE_MINUTES_IN_SECONDS:
             # TODO Check for new template definitions
