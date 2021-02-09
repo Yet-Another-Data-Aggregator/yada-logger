@@ -1,8 +1,10 @@
 from src.channel import Channel
 
-# A list of all currently loaded channels.
+# A dict of all currently loaded channels keyed by name.
 channels = {}
 
+# A dict containing lists of channels keyed by the amount of time before their next run.
+next_run_times = {}
 
 def load_from_config(config):
     """Add all channels listed in config."""
@@ -18,3 +20,34 @@ def add_channel(channel):
 def get_channel_cache(channel_name):
     """Returns the logged value cache of the given channel"""
     return channels[channel_name].cache
+
+
+def run_channels():
+    """Runs the channels that need run and returns the amount of time to sleep until next log."""
+
+    # Get key of channel first to run
+    next_key = sorted(next_run_times)[0]
+
+    for channel_name in next_run_times.pop(next_key, None):
+        channel = channels[channel_name]
+
+        # Run channels and log values
+        try:
+            channel_value = channel.log()
+            # TODO log channel value and handle error
+            print(channel_value)
+        except Exception as e:
+            print(e)
+
+        # Get next time to run channel and add back into next_run_times
+        try:
+            channel_next_run_time = channel.next_log_interval()
+        except Exception:
+            channel_next_run_time = 1000 * 60 * 5
+
+        if channel_next_run_time not in next_run_times:
+            next_run_times[channel_next_run_time] = []
+        next_run_times[channel_next_run_time].append(channel_name)
+
+    # Return time to wait until next run
+    return sorted(next_run_times)[0]
