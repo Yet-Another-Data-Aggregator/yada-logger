@@ -2,17 +2,6 @@ from pathlib import Path
 
 import file_utils
 
-class ChannelManager:
-    def __init__(self):
-        self.channels = {}
-
-    def add_channel(self, channel):
-        self.channels[channel.name] = channel
-
-    def get_last_value_for_channel(self, channel_name):
-        return self.channels[channel_name].last_value
-
-
 class Channel:
     """Channel represents the logic that converts sensor data into a logged value."""
 
