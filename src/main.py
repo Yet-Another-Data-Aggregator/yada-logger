@@ -1,17 +1,30 @@
 import configparser
+import time
 
-from src.channel import from_config
+import channel_manager
+
+CONFIG_FILE = "config.ini"
+FIVE_MINUTES_IN_SECONDS = 60 + 5
+
+restart = False
+running = True
+
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
-    config.read("config.ini")
+    config.read(CONFIG_FILE)
 
-    print(config.sections())
+    channel_manager.load_from_config(config)
 
-    for key in filter(lambda section: section.startswith("channel/"), config.sections()):
-        device = from_config(config[key])
-        print(device)
-        device.write_to_config(config)
+    now = time.time()
 
-    with open("config.ini", "w") as config_file:
-        config.write(config_file)
+    while running:
+        # TODO run channels and log
+
+        if time.time() - now > FIVE_MINUTES_IN_SECONDS:
+            # TODO Check for new template definitions
+            pass
+
+    if restart:
+        # TODO close and restart script
+        pass
