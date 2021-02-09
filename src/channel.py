@@ -1,7 +1,3 @@
-from pathlib import Path
-
-import file_utils
-
 class Channel:
     """Channel represents the logic that converts sensor data into a logged value."""
 

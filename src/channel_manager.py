@@ -1,5 +1,6 @@
 from src.channel import Channel
 
+# A list of all currently loaded channels.
 channels = {}
 
 
