@@ -17,12 +17,14 @@ class Channel:
     """Channel represents the logic that converts sensor data into a logged value."""
 
     def __init__(self, name, cache_size):
+        """Channel initializer. Sets the name, cache size, and initializes the cache to an empty list."""
         self.name = name
         self.cache_size = cache_size
         self.cache = []
 
     @classmethod
     def from_config(cls, config):
+        """Returns a new channel object from config."""
         return cls(
             config.name.replace("channel/", ""),
             config.get("cache_size", 0),
@@ -32,6 +34,7 @@ class Channel:
         return f"Channel[name: {self.name}, cache_size: {self.cache_size}, cache: {self.cache}]"
 
     def write_to_config(self, config):
+        """Writes the current channel to the given config."""
         config[f"channel/{self.name}"] = {
             "cache_size": self.cache_size
         }
