@@ -6,6 +6,7 @@ channels = {}
 # A dict containing lists of channels keyed by the amount of time before their next run.
 next_run_times = {}
 
+
 def load_from_config(config):
     """Add all channels listed in config."""
     for key in filter(lambda section: section.startswith("channel/"), config.sections()):
@@ -15,6 +16,7 @@ def load_from_config(config):
 def add_channel(channel):
     """Adds the given channel to this manager"""
     channels[channel.name] = channel
+    add_to_next_run(channel.name, 0)
 
 
 def get_channel_cache(channel_name):
@@ -45,9 +47,14 @@ def run_channels():
         except Exception:
             channel_next_run_time = 1000 * 60 * 5
 
-        if channel_next_run_time not in next_run_times:
-            next_run_times[channel_next_run_time] = []
-        next_run_times[channel_next_run_time].append(channel_name)
+        add_to_next_run(channel_name, channel_next_run_time)
 
     # Return time to wait until next run
     return sorted(next_run_times)[0]
+
+
+def add_to_next_run(channel_name, wait_time):
+    """Adds the given channel name to next_run_times with the given time."""
+    if wait_time not in next_run_times:
+        next_run_times[wait_time] = []
+    next_run_times[wait_time].append(channel_name)

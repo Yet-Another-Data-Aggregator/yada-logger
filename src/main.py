@@ -24,6 +24,7 @@ if __name__ == '__main__':
         time.sleep(wait_time)
 
         if time.time() - now > FIVE_MINUTES_IN_SECONDS:
+            now = time.time()
             # TODO Check for new template definitions
             pass
 
