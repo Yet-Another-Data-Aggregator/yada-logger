@@ -1,7 +1,7 @@
 import configparser
 import time
 
-import channel_manager
+from src.channel_manager import ChannelManager
 
 CONFIG_FILE = "config.ini"
 FIVE_MINUTES_IN_SECONDS = 60 + 5
@@ -9,17 +9,19 @@ FIVE_MINUTES_IN_SECONDS = 60 + 5
 restart = False
 running = True
 
+test = True
+
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
 
-    channel_manager.load_from_config(config)
+    ChannelManager.load_from_config(config)
 
     now = time.time()
 
     while running:
-        wait_time = channel_manager.run_channels()
+        wait_time = ChannelManager.run_channels()
 
         time.sleep(wait_time)
 
@@ -27,6 +29,8 @@ if __name__ == '__main__':
             now = time.time()
             # TODO Check for new template definitions
             pass
+
+        test = False
 
     if restart:
         # TODO close and restart script

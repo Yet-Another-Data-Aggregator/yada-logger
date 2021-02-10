@@ -12,7 +12,7 @@ class Channel:
         """Returns a new channel object from config."""
         return cls(
             config.name.replace("channel/", ""),
-            config.get("cache_size", 0),
+            int(config.get("cache_size", 0)),
         )
 
     def __repr__(self):
@@ -46,7 +46,7 @@ class Channel:
             # Add value to cache and pop if cache has reached max size
             if len(self.cache) >= self.cache_size:
                 self.cache.pop()
-            self.cache.append(value)
+            self.cache.insert(0, value)
 
             return value
         except Exception as e:
