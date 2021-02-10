@@ -1,10 +1,11 @@
 class Channel:
     """Channel represents the logic that converts sensor data into a logged value."""
 
-    def __init__(self, name, cache_size):
+    def __init__(self, name, class_name, cache_size):
         """Channel initializer. Sets the name, cache size, and initializes the cache to an empty list."""
         self.name = name
         self.cache_size = cache_size
+        self.class_name = class_name
         self.cache = []
 
     @classmethod
@@ -12,7 +13,8 @@ class Channel:
         """Returns a new channel object from config."""
         return cls(
             config.name.replace("channel/", ""),
-            int(config.get("cache_size", 0)),
+            config.class_name,
+            int(config.get("cache_size", 0))
         )
 
     def __repr__(self):
@@ -21,7 +23,8 @@ class Channel:
     def write_to_config(self, config):
         """Writes the current channel to the given config."""
         config[f"channel/{self.name}"] = {
-            "cache_size": self.cache_size
+            "cache_size": self.cache_size,
+            "class_name": self.class_name
         }
 
     def next_log_interval(self):
