@@ -14,8 +14,6 @@ class ChannelManager:
 
     @staticmethod
     def initialize(config):
-        file_utils.initialize(config)
-
         if "config" not in config:
             return
 
