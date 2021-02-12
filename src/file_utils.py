@@ -13,6 +13,12 @@ date_format = "%m-%d-%Y-%H:%M:%S"
 
 
 def initialize(config):
+    """
+    Load global variables from config.
+    All configuration keys should be under a heading labeled "config".
+
+    :param config: The configuration object to load from.
+    """
     if "config" not in config:
         return
 
@@ -29,8 +35,14 @@ def initialize(config):
 
 def get_file(directory, filename, file_size=max_file_size, file_prefix=log_file_prefix):
     """
-    Returns the file in the given directory that is the most recently created whose size is less than the given
+    Returns a file in the given directory that is the most recently created whose size is less than the given
     maximum size.
+
+    :param directory: The directory to get the file from. If this directory does not exist it will be created.
+    :param filename: The name of the file after prefix and date.
+    :param file_size: The maximum size a single file can be.
+    :param file_prefix: A string to be prepended to the beginning of the file name.
+    :return: A Path object representing the file.
     """
     files = list(directory.iterdir())
     file_num = len(files)
@@ -51,15 +63,22 @@ def get_file(directory, filename, file_size=max_file_size, file_prefix=log_file_
 
 
 def get_datetime():
-    """Gets the current time with a standard date format"""
+    """
+    Gets a datetime object with the global date format.
+
+    :return: The current datetime with the global format.
+    """
     return datetime.now().strftime(date_format)
 
 
 def get_datetime_from_filename(filename):
     """
-    Returns a datetime object from the given filename. The datetime must be in %m-%d-%Y-%H:%M:%S format and must
-    be between the first and second underscore '_' in the filename.
+    Gets a datetime object from the given filename with the global date format.
+
+    :param filename: The filename as a string get the date from.
+    :return: A datetime object in the global date format.
     """
+    # TODO make less brittle
     start = filename.find('_') + 1
     end = filename.find('_', start)
 
