@@ -1,6 +1,8 @@
 import importlib
 
-CHANNEL_MODULE_PATH = "src.channels."
+import file_utils
+
+CHANNEL_MODULE_PATH = "channels."
 
 
 class ChannelManager:
@@ -9,6 +11,19 @@ class ChannelManager:
 
     # A dict containing lists of channels keyed by the amount of time before their next run.
     run_times = {}
+
+    @staticmethod
+    def initialize(config):
+        file_utils.initialize(config)
+
+        if "config" not in config:
+            return
+
+        config = config["config"]
+
+        global CHANNEL_MODULE_PATH
+
+        CHANNEL_MODULE_PATH = config.get("channel_module_path", "channels")
 
     @staticmethod
     def reload_channel(config):
@@ -68,6 +83,11 @@ class ChannelManager:
     @staticmethod
     def run_channels():
         """Runs the channels that need run and returns the amount of time to sleep until next log."""
+
+        # If no channels to run, return and wait five seconds
+        if len(ChannelManager.run_times) == 0:
+            return 5
+
         # Get key of channel first to run
         next_key = sorted(ChannelManager.run_times)[0]
         next_channels = ChannelManager.run_times.pop(next_key, None)

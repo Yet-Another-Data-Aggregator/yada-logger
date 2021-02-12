@@ -1,7 +1,7 @@
 import configparser
 import time
 
-from src.channel_manager import ChannelManager
+from channel_manager import ChannelManager
 
 CONFIG_FILE = "config.ini"
 FIVE_MINUTES_IN_SECONDS = 60 + 5
@@ -9,13 +9,12 @@ FIVE_MINUTES_IN_SECONDS = 60 + 5
 restart = False
 running = True
 
-test = True
-
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
 
+    ChannelManager.initialize(config)
     ChannelManager.load_from_config(config)
 
     now = time.time()
