@@ -1,6 +1,7 @@
 import configparser
 import time
 
+import network
 import file_utils
 from channel_manager import ChannelManager
 
@@ -15,6 +16,7 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
 
+    network.initialize(config)
     file_utils.initialize(config)
     ChannelManager.initialize(config)
 
