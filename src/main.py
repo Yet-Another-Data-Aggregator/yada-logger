@@ -12,16 +12,7 @@ restart = False
 running = True
 
 
-if __name__ == '__main__':
-    config = configparser.ConfigParser()
-    config.read(CONFIG_FILE)
-
-    network.initialize(config)
-    file_utils.initialize(config)
-    ChannelManager.initialize(config)
-
-    ChannelManager.load_from_config(config)
-
+def run():
     now = time.time()
 
     while running:
@@ -34,7 +25,23 @@ if __name__ == '__main__':
             # TODO Check for new template definitions
             pass
 
-        test = False
+
+if __name__ == '__main__':
+    config = configparser.ConfigParser()
+    config.read(CONFIG_FILE)
+
+    network.initialize(config)
+    file_utils.initialize(config)
+    ChannelManager.initialize(config)
+
+    ChannelManager.load_from_config(config)
+
+
+    #network.fetch_channels()
+
+    #print(network.should_update_template())
+
+    run()
 
     if restart:
         # TODO close and restart script

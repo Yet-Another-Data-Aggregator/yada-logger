@@ -41,8 +41,9 @@ class ChannelManager:
     def load_from_config(config):
         """Add all channels listed in config."""
         for key in filter(lambda section: section.startswith("channel/"), config.sections()):
-            channel_module = importlib.import_module(f"{CHANNEL_MODULE_PATH}{config['module']}")
-            ChannelManager.add_channel(ChannelManager.load_channel(config[key], channel_module))
+            channel_module = importlib.import_module(f"{CHANNEL_MODULE_PATH}{config[key]['module']}")
+
+            ChannelManager.add_channel(*ChannelManager.load_channel(config[key], channel_module))
 
     @staticmethod
     def load_channel(config, channel_module):

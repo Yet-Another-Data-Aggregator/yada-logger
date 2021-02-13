@@ -13,7 +13,7 @@ class Channel:
         """Returns a new channel object from config."""
         return cls(
             config.name.replace("channel/", ""),
-            config.class_name,
+            config["class_name"],
             int(config.get("cache_size", 0))
         )
 
