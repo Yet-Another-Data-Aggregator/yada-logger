@@ -1,4 +1,6 @@
 import configparser
+import os
+import sys
 import time
 
 import network
@@ -27,6 +29,8 @@ def run():
 
 
 if __name__ == '__main__':
+    print("Hello")
+
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE)
 
@@ -43,6 +47,6 @@ if __name__ == '__main__':
 
     run()
 
+    # Restart the process if True
     if restart:
-        # TODO close and restart script
-        pass
+        os.execv(sys.executable, ['python'] + sys.argv)
