@@ -1,12 +1,21 @@
 class Channel:
-    """Channel represents the logic that converts sensor data into a logged value."""
+    """
+    Channel represents the logic that converts sensor data into a logged value.
+    """
 
     @classmethod
     def initialize(cls):
+        """
+        Creates a new class instance.
+
+        :return: New class instance.
+        """
         return cls()
 
     def __init__(self):
-        """Channel initializer. Sets the name, cache size, and initializes the cache to an empty list."""
+        """
+        Channel initializer. Sets the cache size, and initializes the cache to an empty list.
+        """
         self.cache_size = 0
         self.cache = []
 
@@ -30,11 +39,13 @@ class Channel:
         pass
 
     def log(self):
-        """Runs scan and adds value to cache"""
+        """
+        Runs scan and adds value to cache.
+        """
         try:
             value = self.scan()
 
-            # Add value to cache and pop if cache has reached max size
+            # Add value to cache and pop oldest if cache has reached its max size
             if self.cache_size > 0:
                 if len(self.cache) >= self.cache_size:
                     self.cache.pop()

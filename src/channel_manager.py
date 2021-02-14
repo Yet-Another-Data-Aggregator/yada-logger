@@ -1,12 +1,28 @@
 import importlib
 
-from config import Config
+import config
 
-CHANNEL_MODULE_PATH = "channels."
+# The module path to import from
+channel_module_path = "channels."
+
+
+@config.section("storage")
+def load_variables(section):
+    """
+    Loads configuration variables from the "storage" section
+
+    :param section: The configuration section
+    """
+    global channel_module_path
+    channel_module_path = section.get("channel_module_directory", "channels/").replace("/", ".")
 
 
 class ChannelManager:
-    # A dict of all currently loaded channels keyed by name and their modules
+    """
+    Static utility class to manage loading and running of channels.
+    """
+
+    # A dict of all currently loaded channels keyed by name
     channels = {}
 
     # A dict containing lists of channels keyed by the amount of time before their next run.
@@ -14,26 +30,32 @@ class ChannelManager:
 
     @staticmethod
     def initialize():
-        config = Config.get()
-
-        if "config" not in config:
-            return
-
-        config = config["config"]
-
-        global CHANNEL_MODULE_PATH
-
-        CHANNEL_MODULE_PATH = config.get("channel_module_path", "channels").replace("/", ".")
+        """
+        Loads configuration variables
+        """
+        load_variables()
 
     @staticmethod
-    def load_from_config(config):
-        """Add all channels listed in config."""
-        for key in filter(lambda section: section.startswith("channel/"), config.sections()):
-            channel_module = importlib.import_module(f"{CHANNEL_MODULE_PATH}{config[key]['module']}")
+    def load_from_config(config_object):
+        """
+        Add all channels listed in config.
+
+        :param config_object: The configuration object to load channels from.
+        """
+        for key in filter(lambda section: section.startswith("channel/"), config_object.sections()):
+            channel_module = importlib.import_module(f"{channel_module_path}{config_object[key]['module']}")
             ChannelManager.add_channel(ChannelManager.load_channel(key.replace("channel/", ""), channel_module))
 
     @staticmethod
     def load_channel(channel_name, channel_module):
+        """
+        Loads the channel with the given name from the given module and ensures that the ChannelManager is set in the
+        loaded class' globals.
+
+        :param channel_name: The name of the class of the channel to load.
+        :param channel_module: The module to load the channel class from.
+        :return: A new instance of the channel object.
+        """
         channel_class = getattr(channel_module, channel_name)
         setattr(channel_module, "ChannelManager", ChannelManager)
 
@@ -41,19 +63,28 @@ class ChannelManager:
 
     @staticmethod
     def add_channel(channel):
-        """Adds the given channel to this manager"""
-        ChannelManager.channels[channel.__class__.__name__] = channel
+        """
+        Adds the given channel to this manager.
 
+        :param channel: The channel object to add.
+        """
+        ChannelManager.channels[channel.__class__.__name__] = channel
         add_to_multi_dict(0, channel, ChannelManager.run_times)
 
     @staticmethod
     def get_channel_cache(channel_name):
-        """Returns the logged value cache of the given channel"""
+        """
+        Returns the logged value cache of the given channel.
+
+        :param channel_name: The name of the channel to get the cache from.
+        """
         return ChannelManager.channels[channel_name].cache
 
     @staticmethod
     def run_channels():
-        """Runs the channels that need run and returns the amount of time to sleep until next log."""
+        """
+        Runs the channels that need run and returns the amount of time to sleep until next log.
+        """
 
         # If no channels to run, return and wait five seconds
         if len(ChannelManager.run_times) == 0:
@@ -65,6 +96,7 @@ class ChannelManager:
 
         next_run_times = {}
 
+        # Updates times of channels that haven't been run
         for time, channel_list in ChannelManager.run_times.items():
             add_to_multi_dict(time - key, channel_list, next_run_times)
 
@@ -91,7 +123,9 @@ class ChannelManager:
 
 
 def add_to_multi_dict(key, value, dictionary):
-    """Adds the given channel name to next_run_times with the given time."""
+    """
+    Adds the given value to the given multi-dictionary associated with the given key.
+    """
     if key not in dictionary:
         dictionary[key] = []
 

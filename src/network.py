@@ -10,7 +10,7 @@ PREFIX = "ProfileScripts/Template/"
 logger_id = ""
 template_id = ""
 server_address = ""
-template_modified_date = datetime.now()
+template_modified_date = 0
 template_modified_date_format = ""
 
 cred = credentials.Certificate("../secret/yada-comp451-firebase-adminsdk-bi2lk-86047272ca.json")
@@ -79,8 +79,6 @@ def channel_template_outdated():
 
 
 def fetch():
-    print("Hello")
-
     if channel_template_invalid():
         fetch_template()
 

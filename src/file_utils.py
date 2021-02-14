@@ -1,40 +1,44 @@
+from datetime import datetime
 from pathlib import Path
 
-from datetime import datetime
+import config
 
-from config import Config
-
+# The path to the directory where logs are saved
 logging_directory = Path("logs/")
 
+# The prefix of files that are pending upload
 upload_file_prefix = "upload_"
+
+# Prefix of log files
 log_file_prefix = "log_"
 
+# Maximum size of log files
 max_file_size = 100 * 1024
 
+# Format of date to use in filenames
 date_format = "%m-%d-%Y-%H:%M:%S"
+
+
+@config.section("storage")
+def load_variables(section):
+    """
+    Loads variables from the "storage" section of the configuration file
+
+    :param section: The config section
+    """
+    global logging_directory, upload_file_prefix, log_file_prefix, max_file_size, date_format
+    logging_directory = Path(section.get("logging_directory", "logs/"))
+    upload_file_prefix = section.get("upload_file_prefix", "upload_")
+    log_file_prefix = section.get("log_file_prefix", "log_")
+    max_file_size = int(section.get("max_file_size", 100 * 1024))
+    date_format = section.get("date_format", "%m-%d-%Y-%H:%M:%S")
 
 
 def initialize():
     """
     Load global variables from config.
-    All configuration keys should be under a heading labeled "config".
-
-    :param config: The configuration object to load from.
     """
-    config = Config.get()
-
-    if "config" not in config:
-        return
-
-    config = config["config"]
-
-    global logging_directory, upload_file_prefix, log_file_prefix, max_file_size, date_format
-
-    logging_directory = Path(config.get("logging_directory", "logs/"))
-    upload_file_prefix = config.get("upload_file_prefix", "upload_")
-    log_file_prefix = config.get("log_file_prefix", "log_")
-    max_file_size = config.get("max_file_size", 100 * 1024)
-    date_format = config.get("date_format", "%m-%d-%Y-%H:%M:%S")
+    load_variables()
 
 
 def get_file(directory, filename, file_size=max_file_size, file_prefix=log_file_prefix):

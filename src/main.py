@@ -2,24 +2,38 @@ import os
 import sys
 import time
 
-from config import Config
+import config
 import file_utils
 import network
 from channel_manager import ChannelManager
+from config import Config
 
-template_refresh_interval = 60 * 5
+# Interval in seconds between checks to update channels
+template_update_interval = 60 * 5
 
+# Controls if the application should restart or quit
 restart = False
+
+# Indicates whether the application is running
 running = True
 
 
+@config.section("config")
+def load_variables(section):
+    """
+    Loads variables from the "config" section of the configuration file
+
+    :param section: The config section
+    """
+    global template_update_interval
+    template_update_interval = float(section.get("template_refresh_interval", 60 * 5))
+
+
 def initialize():
-    global template_refresh_interval
-
-    config = Config.get()
-
-    if "config" in config:
-        template_refresh_interval = float(config["config"].get("template_refresh_interval", 60 * 5))
+    """
+    Initializes the application and checks if the channels need updated.
+    """
+    load_variables()
 
     network.initialize()
     file_utils.initialize()
@@ -28,10 +42,14 @@ def initialize():
     if network.should_update_template():
         network.fetch()
 
-    ChannelManager.load_from_config(config)
+    ChannelManager.load_from_config(Config.get())
 
 
 def check_update():
+    """
+    Checks whether the channels need updating. If not, this function returns without doing anything, if so, the new
+    channels are fetched and the running and restart variables are set to reload the application.
+    """
     if not network.should_update_template():
         return
 
@@ -43,6 +61,10 @@ def check_update():
 
 
 def run():
+    """
+    Main loop of the application. Runs all channels, sleeps until next channel run time, and checks for channel
+    updates if the interval is up.
+    """
     now = time.time()
 
     # Run all channels and then sleep until the next channel should run
@@ -51,7 +73,7 @@ def run():
 
         time.sleep(wait_time)
 
-        if time.time() - now > template_refresh_interval:
+        if time.time() - now > template_update_interval:
             now = time.time()
             check_update()
 
