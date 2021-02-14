@@ -2,6 +2,8 @@ from pathlib import Path
 
 from datetime import datetime
 
+from config import Config
+
 logging_directory = Path("logs/")
 
 upload_file_prefix = "upload_"
@@ -12,13 +14,15 @@ max_file_size = 100 * 1024
 date_format = "%m-%d-%Y-%H:%M:%S"
 
 
-def initialize(config):
+def initialize():
     """
     Load global variables from config.
     All configuration keys should be under a heading labeled "config".
 
     :param config: The configuration object to load from.
     """
+    config = Config.get()
+
     if "config" not in config:
         return
 
