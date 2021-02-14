@@ -1,7 +1,10 @@
 const express = require('express');
 const path = require('path');
 const ip = require('ip');
+var bodyParser = require('body-parser'); //needed to get data from body of POST requests
 const app = express();
+
+app.use(bodyParser.json()); // support json encoded bodies
 
 //Set and use the path to serve the production build of the webapp
 const webappBuildPath = path.join(__dirname, "webapp/build");
@@ -16,7 +19,12 @@ app.get('/', (req, res) => {
 
 //if they request ping, pong back
 app.get('/ping', (req, res) => {
-  return res.send('pong');
+  res.send({data : "pong"});
+});
+
+app.post('/testpost', (req, res) => {
+    var msg = req.body.data;
+    console.log("Client sent me: " + msg);
 });
 
 // console.log that your server is up and running
