@@ -3,17 +3,49 @@ from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 
+import config
 from config import Config
 
+# Path of firebase template storage
 PREFIX = "ProfileScripts/Template/"
 
+# ID of this logger
 logger_id = ""
+
+# ID of the template this logger is using
 template_id = ""
+
+# Address of the database server
 server_address = ""
-template_modified_date = 0
+
+# Latest modified date of the template. Used to know when to update the channel template.
+template_modified_date = datetime.fromtimestamp(0)
+
+# Format of the template modified date
 template_modified_date_format = ""
 
+# Path to store downloaded channels in
 channel_module_path = "channels/"
+
+
+@config.section("config")
+def load_variables(section):
+    """
+    Loads configuration variables from the "config" section
+
+    :param section: The configuration section
+    """
+    global logger_id, template_id, server_address, template_modified_date, template_modified_date_format
+    global channel_module_path
+
+    logger_id = Config.required(section, "logger_id", "Logger ID is required")
+    template_id = Config.required(section, "template_id", "Template ID is required")
+    server_address = Config.required(section, "server_address", "Server address is required")
+    template_modified_date_format = section.get("template_modified_date_format", "%Y-%m-%d %H:%M:%S.%f")
+    channel_module_path = section.get("channel_module_path", "channels/")
+
+    if "template_modified_date" in section:
+        template_modified_date = datetime.strptime(section["template_modified_date"], template_modified_date_format)
 
 
 class Network:
@@ -27,30 +59,13 @@ class Network:
 
     @staticmethod
     def initialize():
-        global logger_id, template_id, server_address, template_modified_date, template_modified_date_format
-        global channel_module_path
-
-        config = Config.get()
-
-        if "config" not in config:
-            return
-
-        config = config["config"]
-
-        logger_id = Config.required(config, "logger_id", "Logger ID is required")
-        template_id = Config.required(config, "template_id", "Template ID is required")
-        server_address = Config.required(config, "server_address", "Server address is required")
-        template_modified_date_format = config.get("template_modified_date_format", "%Y-%m-%d %H:%M:%S.%f")
-        template_modified_date = datetime.strptime(
-            config.get("template_modified_date", datetime.now()),
-            template_modified_date_format
-        )
-        channel_module_path = config.get("channel_module_path", "channels/")
+        """
+        Loads config variables and initializes database objects.
+        """
+        load_variables()
 
         Network.template_snapshot = Network.db.collection("ChannelTemplates").document(template_id).get()
         Network.logger_snapshot = Network.db.collection("Loggers").document(logger_id).get()
-
-        print(Network.logger_snapshot)
 
     @staticmethod
     def should_update_template():
@@ -91,21 +106,27 @@ class Network:
 
     @staticmethod
     def fetch_template():
-        global template_id, template_snapshot
+        """
+        Fetches the new or updated template from the database.
+        """
+        global template_id
         template_id = Network.logger_snapshot.to_dict()["channelTemplate"]
-        template_snapshot = Network.db.collection("ChannelTemplates").document(template_id).get()
 
-        config = Config.get()
-        config["config"]["template_id"] = template_id
+        Network.template_snapshot = Network.db.collection("ChannelTemplates").document(template_id).get()
+
+        Config.get()["config"]["template_id"] = template_id
 
     @staticmethod
     def fetch_channels():
+        """
+        Downloads new or updated channels from database.
+        """
         config = Config.get()
         bucket = storage.bucket("yada-comp451.appspot.com")
 
         downloaded_files = []
 
-        template = template_snapshot.to_dict()
+        template = Network.template_snapshot.to_dict()
         for channel_name, filename in template["channels"].items():
             if filename in downloaded_files:
                 continue
@@ -121,6 +142,11 @@ class Network:
 
     @staticmethod
     def upload_data(data):
+        """
+        Uploads the given data to the database.
+
+        :param data: The data as a dictionary to be added to this Logger's data
+        """
         Network.db.collection("Loggers").document(logger_id).update({
             "data": firestore.firestore.ArrayUnion([data])
         })
