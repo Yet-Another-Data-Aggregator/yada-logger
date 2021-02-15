@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const ip = require('ip');
+const wifi_manager = require('./wifi_manager')();
 var bodyParser = require('body-parser'); //needed to get data from body of POST requests
 const app = express();
 
@@ -10,6 +11,7 @@ app.use(bodyParser.json()); // support json encoded bodies
 const webappBuildPath = path.join(__dirname, "webapp/build");
 console.log("Using build path of:" + webappBuildPath);
 app.use(express.static(webappBuildPath));
+
 
 //Serve the webapp on the default route
 app.get('/', (req, res) => {
