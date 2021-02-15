@@ -1,52 +1,56 @@
-class ScanException(Exception):
-    pass
-
-
-class ChannelManager:
-    def __init__(self):
-        self.channels = {}
-
-    def add_channel(self, channel):
-        self.channels[channel.name] = channel
-
-    def get_last_value_for_channel(self, channel_name):
-        return self.channels[channel_name].last_value
-
-
 class Channel:
-    def __init__(self, name, channel_type, read_rate):
-        self.name = name
-        self.channel_type = channel_type
-        self.read_rate = read_rate
-        self.last_value = {}
+    """
+    Channel represents the logic that converts sensor data into a logged value.
+    """
+
+    @classmethod
+    def initialize(cls):
+        """
+        Creates a new class instance.
+
+        :return: New class instance.
+        """
+        return cls()
+
+    def __init__(self):
+        """
+        Channel initializer. Sets the cache size, and initializes the cache to an empty list.
+        """
+        self.cache_size = 0
+        self.cache = []
 
     def __repr__(self):
-        return f"Device[name: {self.name}, channel_type: {self.channel_type}, read_rate: {self.read_rate}]"
+        return f"Channel[name: {self.__class__.__name__}, cache_size: {self.cache_size}, cache: {self.cache}]"
 
-    def write_to_config(self, config):
-        config[f"channel/{self.name}"] = {
-            "channel_type": self.channel_type,
-            "read_rate": self.read_rate
-        }
+    def next_log_interval(self):
+        """
+        Method that returns the time in seconds to wait until the next log.
+        Default is 5 minutes.
+        Can be a floating point number for milliseconds.
+        """
+        return 60 * 5
 
     def scan(self):
-        """Should return a map with the name of the value and the actual value"""
+        """
+        This method generates the actual value to be logged. The return type should be a dict with string keys and
+        values that are serializable or a tuple containing the value dict and a list of any faults that were generated.
+        Any exceptions that occur while this method is running will be caught and logged in place of a data value.
+        """
         pass
 
     def log(self):
+        """
+        Runs scan and adds value to cache.
+        """
         try:
             value = self.scan()
 
-            self.last_value = value
+            # Add value to cache and pop oldest if cache has reached its max size
+            if self.cache_size > 0:
+                if len(self.cache) >= self.cache_size:
+                    self.cache.pop()
+                self.cache.insert(0, value)
 
-            # TODO log value
-        except ScanException as e:
-            print(e)
-
-
-def from_config(config):
-    return Channel(
-        config.name.replace("channel/", ""),
-        config.get("channel_type", ""),
-        config.get("read_rate", 60000),
-    )
+            return value
+        except Exception as e:
+            return {}, [repr(e)]
