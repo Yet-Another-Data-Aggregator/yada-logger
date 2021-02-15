@@ -12,6 +12,19 @@ const webappBuildPath = path.join(__dirname, "webapp/build");
 console.log("Using build path of:" + webappBuildPath);
 app.use(express.static(webappBuildPath));
 
+// Helper function to log errors and send a generic status "SUCCESS"
+// message to the caller
+function log_error_send_success_with(success_obj, error, response) {
+  if (error) {
+      console.log("ERROR: " + error);
+      response.send({ status: "ERROR", error: error });
+  } else {
+      success_obj = success_obj || {};
+      success_obj["status"] = "SUCCESS";
+      response.send(success_obj);
+  }
+  response.end();
+}
 
 //Serve the webapp on the default route
 app.get('/', (req, res) => {
@@ -30,11 +43,19 @@ app.post('/testpost', (req, res) => {
 });
 
 //route handler for connecting to wifi
-app.post("/api/enable_wifi", function(request, response) {
+app.post("/enable_wifi", function(request, response) {
   var conn_info = {
       wifi_ssid:      request.body.wifi_ssid,
       wifi_passcode:  request.body.wifi_passcode,
   };
+
+//rescan wifi
+app.get("/rescan_wifi", function(request, response) {
+    console.log("Server got /rescan_wifi");
+    iwlist(function(error, result) {
+        log_error_send_success_with(result[0], error, response);
+    });
+});
 
   // TODO: If wifi did not come up correctly, it should fail
   // currently we ignore ifup failures.

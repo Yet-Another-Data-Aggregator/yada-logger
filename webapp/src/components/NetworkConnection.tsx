@@ -17,7 +17,19 @@ export default function NetworkConnection() {
 
     const sayHiToServer = () => {
         sendTestPost("Hey server!");
+        getWifiNetworks();
     };
+
+    function getWifiNetworks() {
+        fetch("/rescan_wifi").then(async (response) => {
+            var responseJson = await response.json();
+
+            console.log("Success Getting Wifi Networks");
+            console.log(responseJson);
+        }).catch((reason) => {
+            console.log("ERROR:"+reason);
+        });
+    }
 
     function sendTestPost(message: string) {
         const requestOptions = {
