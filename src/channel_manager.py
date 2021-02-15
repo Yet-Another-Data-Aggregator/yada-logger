@@ -1,8 +1,13 @@
 import importlib
+from datetime import datetime
 
 import config
+import file_utils
+from file_utils import Files
 
 # The module path to import from
+from network import Network
+
 channel_module_path = "channels."
 
 
@@ -85,6 +90,9 @@ class ChannelManager:
         """
         Runs the channels that need run and returns the amount of time to sleep until next log.
         """
+        result_values = {}
+        result_faults = []
+        next_run_times = {}
 
         # If no channels to run, return and wait five seconds
         if len(ChannelManager.run_times) == 0:
@@ -94,8 +102,6 @@ class ChannelManager:
         key = sorted(ChannelManager.run_times)[0]
         channels_to_run = ChannelManager.run_times.pop(key, [])
 
-        next_run_times = {}
-
         # Updates times of channels that haven't been run
         for time, channel_list in ChannelManager.run_times.items():
             add_to_multi_dict(time - key, channel_list, next_run_times)
@@ -104,9 +110,16 @@ class ChannelManager:
             # Run channels and log values
             try:
                 value = channel.log()
-                # TODO log channel value and handle error
+
+                if isinstance(value, dict):
+                    result_values.update(value)
+                elif isinstance(value, tuple):
+                    result_values.update(value[0])
+                    result_faults.append(value[1])
+                elif isinstance(value, list):
+                    result_faults.append(value)
             except Exception as e:
-                print(e)
+                result_faults.append(str(e))
 
             # Get next time to run channel and add back into next_run_times
             try:
@@ -116,7 +129,16 @@ class ChannelManager:
 
             add_to_multi_dict(channel_next_run_time, channel, next_run_times)
 
+        result_values["timestamp"] = datetime.now().strftime(file_utils.date_format)
+
+        file = Files.get_file(file_utils.logging_directory, "values")
+        with file.open("a") as f:
+            f.write(f"{str(result_values)}\n")
+            f.close()
+
         ChannelManager.run_times = next_run_times
+
+        Network.upload_data(result_values)
 
         # Return time to wait until next run
         return sorted(ChannelManager.run_times)[0]

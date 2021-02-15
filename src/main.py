@@ -3,10 +3,11 @@ import sys
 import time
 
 import config
-import file_utils
 import network
+from network import Network
 from channel_manager import ChannelManager
 from config import Config
+from file_utils import Files
 
 # Interval in seconds between checks to update channels
 template_update_interval = 60 * 5
@@ -35,12 +36,12 @@ def initialize():
     """
     load_variables()
 
-    network.initialize()
-    file_utils.initialize()
+    Network.initialize()
+    Files.initialize()
     ChannelManager.initialize()
 
-    if network.should_update_template():
-        network.fetch()
+    if Network.should_update_template():
+        Network.fetch()
 
     ChannelManager.load_from_config(Config.get())
 
@@ -50,10 +51,10 @@ def check_update():
     Checks whether the channels need updating. If not, this function returns without doing anything, if so, the new
     channels are fetched and the running and restart variables are set to reload the application.
     """
-    if not network.should_update_template():
+    if not Network.should_update_template():
         return
 
-    network.fetch()
+    Network.fetch()
 
     global running, restart
     running = False
