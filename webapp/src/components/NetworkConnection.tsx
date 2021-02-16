@@ -50,6 +50,21 @@ export default function NetworkConnection() {
         })
     }
 
+    const NetworkList = (availableNetworks: [{ssid: string}]) => {
+        if(availableNetworks){
+            return (
+                availableNetworks.map((network) => {
+                    <ListItem className="border">
+                    <ListItemIcon>
+                        <Wifi />
+                    </ListItemIcon>
+                    <ListItemText className="flex justify-center" primary={network.ssid} />
+                    </ListItem>
+                })
+            )
+        }
+    }
+
     return (
         <Container>
             <List className="w-1/2 border">
@@ -60,14 +75,7 @@ export default function NetworkConnection() {
                     <ListItemText className="flex justify-center" primary="This is where" />
                 </ListItem>
 
-                {availableNetworks.map((network: { ssid: string }) => (
-                    <ListItem className="border">
-                    <ListItemIcon>
-                        <Wifi />
-                    </ListItemIcon>
-                    <ListItemText className="flex justify-center" primary={network.ssid} />
-                    </ListItem>
-                ))}
+                {NetworkList(availableNetworks)}
 
                 <ListItemText primary="my wifi networks" />
                 <ListItemText primary="would be displayed" />
