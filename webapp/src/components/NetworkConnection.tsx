@@ -58,13 +58,13 @@ export default function NetworkConnection() {
         if (availableNetworks && availableNetworks.length > 0) {
             return (
                 <div>
-                    {availableNetworks.map((network: { ssid: string }) => {
-                        <ListItem className="border">
+                    {availableNetworks.map((network, index) => {
+                        return (<ListItem key={index} className="border">
                             <ListItemIcon>
                                 <Wifi />
                             </ListItemIcon>
                             <ListItemText className="flex justify-center" primary={network.ssid} />
-                        </ListItem>
+                        </ListItem>)
                     })}
                 </div>
             )
