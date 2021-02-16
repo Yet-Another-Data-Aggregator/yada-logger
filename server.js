@@ -29,6 +29,26 @@ function log_error_send_success_with(success_obj, error, response) {
   response.end();
 }
 
+function checkWifiEnabledFallbackToAP() {
+  //Check if we are currently connected to a wifi network
+  wifi_manager.is_wifi_enabled(function (error, result_ip) {
+    if (result_ip) {
+      console.log("\nWifi is enabled. IP:" + result_ip);
+    } else {
+      console.log("\nWifi is not enabled, Enabling AP for self-configure");
+
+      //enable AP so we can configure wifi
+      wifi_manager.enable_ap_mode(ap_ssid, function (error) {
+        if (error) {
+          console.log("... AP Enable ERROR: " + error);
+        } else {
+          console.log("... AP Enable Success!");
+        }
+      });
+    }
+  });
+}
+
 //Serve the webapp on the default route
 app.get("/", (req, res) => {
   res.sendFile(path.join(webappBuildPath, "index.html"));
@@ -44,7 +64,6 @@ app.post("/testpost", (req, res) => {
   console.log("Client sent me: " + msg);
 });
 
-
 //route handler to rescan wifi
 app.get("/rescan_wifi", function (request, response) {
   console.log("Server got /rescan_wifi");
@@ -53,23 +72,8 @@ app.get("/rescan_wifi", function (request, response) {
   });
 });
 
-//Check if we are currently connected to a wifi network
-wifi_manager.is_wifi_enabled(function (error, result_ip) {
-  if (result_ip) {
-    console.log("\nWifi is enabled.");
-  } else {
-    console.log("\nWifi is not enabled, Enabling AP for self-configure");
-
-    //enable AP so we can configure wifi
-    wifi_manager.enable_ap_mode(ap_ssid, function (error) {
-      if (error) {
-        console.log("... AP Enable ERROR: " + error);
-      } else {
-        console.log("... AP Enable Success!");
-      }
-    });
-  }
-});
+/************************************************/
+checkWifiEnabledFallbackToAP();
 
 // console.log that your server is up and running
 var server = app.listen(5000, function () {
@@ -77,7 +81,6 @@ var server = app.listen(5000, function () {
   var port = server.address().port;
   console.log("running at http://" + host + ":" + port);
 });
-
 
 //route handler for connecting to wifi
 app.post("/enable_wifi", function (request, response) {
@@ -95,16 +98,18 @@ app.post("/enable_wifi", function (request, response) {
       wifi_manager.enable_ap_mode(ap_ssid, function (error) {
         console.log("... AP mode reset");
       });
-      response.redirect("/");
     }
 
-    console.log("Wifi Enabled! - Exiting");
+    //restart the web server to give the pi a chance to connect to wifi
+    console.log("Wifi Enabled! - Restarting server");
     server.close();
+
+    checkWifiEnabledFallbackToAP();
+
     server = app.listen(5000, function () {
       var host = ip.address();
       var port = server.address().port;
       console.log("restarted server at http://" + host + ":" + port);
     });
   });
-
 });
