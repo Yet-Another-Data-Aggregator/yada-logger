@@ -5,6 +5,8 @@ const wifi_manager = require('./wifi_manager')();
 var bodyParser = require('body-parser'); //needed to get data from body of POST requests
 const app = express();
 
+const ap_ssid = "RASPI-AP";
+
 app.use(bodyParser.json()); // support json encoded bodies
 
 //Set and use the path to serve the production build of the webapp
@@ -55,7 +57,7 @@ wifi_manager.enable_wifi_mode(conn_info, function(error) {
     if (error) {
         console.log("Enable Wifi ERROR: " + error);
         console.log("Attempt to re-enable AP mode");
-        wifi_manager.enable_ap_mode(config.access_point.ssid, function(error) {
+        wifi_manager.enable_ap_mode(ap_ssid, function(error) {
             console.log("... AP mode reset");
         });
         response.redirect("/");
@@ -82,7 +84,7 @@ wifi_manager.is_wifi_enabled(function(error, result_ip) {
     console.log("\nWifi is not enabled, Enabling AP for self-configure");
 
     //enable AP so we can configure wifi
-    wifi_manager.enable_ap_mode(config.access_point.ssid, function(error) {
+    wifi_manager.enable_ap_mode(ap_ssid, function(error) {
       if(error) {
           console.log("... AP Enable ERROR: " + error);
       } else {
