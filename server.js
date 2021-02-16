@@ -63,8 +63,12 @@ app.post("/enable_wifi", function (request, response) {
       response.redirect("/");
     }
 
-    // No Error, however if we didn't get an IP the passkey is wrong
-    wifi_manager.is_wifi_enabled(function (error, result_ip) {
+    //console.log("Wifi Enabled! - Exiting");
+    //process.exit(0);
+  });
+
+  // No Error, however if we didn't get an IP the passkey is wrong
+  wifi_manager.is_wifi_enabled(function (error, result_ip) {
       if (result_ip) {
         console.log("\nConnection success! IP:" + result_ip);
       } else {
@@ -82,10 +86,6 @@ app.post("/enable_wifi", function (request, response) {
         });
       }
     });
-
-    //console.log("Wifi Enabled! - Exiting");
-    //process.exit(0);
-  });
 });
 
 //route handler to rescan wifi
