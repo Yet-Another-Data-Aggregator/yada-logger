@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const ip = require('ip');
 const wifi_manager = require('./wifi_manager')();
+const iwlist = require('./iwlist');
 var bodyParser = require('body-parser'); //needed to get data from body of POST requests
 const app = express();
 
