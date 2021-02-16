@@ -27,7 +27,7 @@ export default function NetworkConnection() {
             setNetworks(responseJson.scanResults);
 
             console.log("Success Getting Wifi Networks");
-            console.log(availableNetworks);
+            console.log(responseJson);
         }).catch((reason) => {
             console.log("ERROR:"+reason);
         });
