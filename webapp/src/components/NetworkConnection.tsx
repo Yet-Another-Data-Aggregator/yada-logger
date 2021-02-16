@@ -1,9 +1,9 @@
-import React, {useState} from "react";
-import { List, ListItem, ListItemText, Icon, ListItemIcon, Button, Container } from "@material-ui/core";
-import { Wifi } from "@material-ui/icons";
+import React, { useState } from 'react';
+import { List, ListItem, ListItemText, Icon, ListItemIcon, Button, Container } from '@material-ui/core';
+import { Wifi } from '@material-ui/icons';
 
 export default function NetworkConnection() {
-    const [availableNetworks, setNetworks] : [Array<{ssid: string}>, any] = useState([]);
+    const [availableNetworks, setNetworks]: [Array<{ ssid: string }>, any] = useState([]);
 
     const sendTestGet = () => {
         fetch("/ping").then(async (response) => {
@@ -28,8 +28,9 @@ export default function NetworkConnection() {
 
             console.log("Success Getting Wifi Networks");
             console.log(responseJson);
+            console.log(availableNetworks);
         }).catch((reason) => {
-            console.log("ERROR:"+reason);
+            console.log("ERROR:" + reason);
         });
     }
 
@@ -50,18 +51,29 @@ export default function NetworkConnection() {
         })
     }
 
-    const NetworkList = (availableNetworks: Array<{ssid: string}> ) => {
-        if(availableNetworks){
+    const NetworkList = (availableNetworks: Array<{ ssid: string }>) => {
+        console.log(availableNetworks);
+
+        if (availableNetworks.length > 0) {
             return (
                 <div>
-                {availableNetworks.map((network) => {
+                    {availableNetworks.map((network) => {
+                        <ListItem className="border">
+                            <ListItemIcon>
+                                <Wifi />
+                            </ListItemIcon>
+                            <ListItemText className="flex justify-center" primary={network.ssid} />
+                        </ListItem>
+                    })}
+                </div>
+            )
+        }
+        else {
+            return (
+                <div>
                     <ListItem className="border">
-                    <ListItemIcon>
-                        <Wifi />
-                    </ListItemIcon>
-                    <ListItemText className="flex justify-center" primary={network.ssid} />
+                        <ListItemText className="flex justify-center" primary="Didn't find any networks." />
                     </ListItem>
-                })}
                 </div>
             )
         }
@@ -70,18 +82,7 @@ export default function NetworkConnection() {
     return (
         <Container>
             <List className="w-1/2 border">
-                <ListItem className="border">
-                    <ListItemIcon>
-                        <Wifi />
-                    </ListItemIcon>
-                    <ListItemText className="flex justify-center" primary="This is where" />
-                </ListItem>
-
                 {NetworkList(availableNetworks)}
-
-                <ListItemText primary="my wifi networks" />
-                <ListItemText primary="would be displayed" />
-                <ListItemText primary="if I could find any!" />
             </List>
 
             <Button onClick={sendTestGet}>Ping</Button>
