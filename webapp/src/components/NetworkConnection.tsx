@@ -3,7 +3,7 @@ import { List, ListItem, ListItemText, Icon, ListItemIcon, Button, Container } f
 import { Wifi } from "@material-ui/icons";
 
 export default function NetworkConnection() {
-    const [availableNetworks, setNetworks] : [any, any] = useState([]);
+    const [availableNetworks, setNetworks] : [Array<{ssid: string}>, any] = useState([]);
 
     const sendTestGet = () => {
         fetch("/ping").then(async (response) => {
@@ -50,17 +50,19 @@ export default function NetworkConnection() {
         })
     }
 
-    const NetworkList = (availableNetworks: [{ssid: string}]) => {
+    const NetworkList = (availableNetworks: Array<{ssid: string}> ) => {
         if(availableNetworks){
             return (
-                availableNetworks.map((network) => {
+                <div>
+                {availableNetworks.map((network) => {
                     <ListItem className="border">
                     <ListItemIcon>
                         <Wifi />
                     </ListItemIcon>
                     <ListItemText className="flex justify-center" primary={network.ssid} />
                     </ListItem>
-                })
+                })}
+                </div>
             )
         }
     }
