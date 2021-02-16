@@ -44,49 +44,6 @@ app.post("/testpost", (req, res) => {
   console.log("Client sent me: " + msg);
 });
 
-//route handler for connecting to wifi
-app.post("/enable_wifi", function (request, response) {
-  var conn_info = {
-    wifi_ssid: request.body.wifi_ssid,
-    wifi_passcode: request.body.wifi_passcode,
-  };
-
-  // TODO: If wifi did not come up correctly, it should fail
-  // currently we ignore ifup failures.
-  wifi_manager.enable_wifi_mode(conn_info, function (error) {
-    if (error) {
-      console.log("Enable Wifi ERROR: " + error);
-      console.log("Attempt to re-enable AP mode");
-      wifi_manager.enable_ap_mode(ap_ssid, function (error) {
-        console.log("... AP mode reset");
-      });
-      response.redirect("/");
-    }
-
-    //console.log("Wifi Enabled! - Exiting");
-    //process.exit(0);
-  });
-
-  // No Error, however if we didn't get an IP the passkey is wrong
-  wifi_manager.is_wifi_enabled(function (error, result_ip) {
-      if (result_ip) {
-        console.log("\nConnection success! IP:" + result_ip);
-      } else {
-        console.log(
-          "\nConnection failed (password probably wrong), re-enabling AP for self-configure"
-        );
-
-        //enable AP so we can configure wifi
-        wifi_manager.enable_ap_mode(ap_ssid, function (error) {
-          if (error) {
-            console.log("... AP Enable ERROR: " + error);
-          } else {
-            console.log("... AP Enable Success!");
-          }
-        });
-      }
-    });
-});
 
 //route handler to rescan wifi
 app.get("/rescan_wifi", function (request, response) {
@@ -119,4 +76,35 @@ var server = app.listen(5000, function () {
   var host = ip.address();
   var port = server.address().port;
   console.log("running at http://" + host + ":" + port);
+});
+
+
+//route handler for connecting to wifi
+app.post("/enable_wifi", function (request, response) {
+  var conn_info = {
+    wifi_ssid: request.body.wifi_ssid,
+    wifi_passcode: request.body.wifi_passcode,
+  };
+
+  // TODO: If wifi did not come up correctly, it should fail
+  // currently we ignore ifup failures.
+  wifi_manager.enable_wifi_mode(conn_info, function (error) {
+    if (error) {
+      console.log("Enable Wifi ERROR: " + error);
+      console.log("Attempt to re-enable AP mode");
+      wifi_manager.enable_ap_mode(ap_ssid, function (error) {
+        console.log("... AP mode reset");
+      });
+      response.redirect("/");
+    }
+
+    console.log("Wifi Enabled! - Exiting");
+    server.close();
+    server = app.listen(5000, function () {
+      var host = ip.address();
+      var port = server.address().port;
+      console.log("restarted server at http://" + host + ":" + port);
+    });
+  });
+
 });
