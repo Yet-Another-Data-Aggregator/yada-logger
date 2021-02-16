@@ -24,7 +24,7 @@ export default function NetworkConnection() {
         fetch("/rescan_wifi").then(async (response) => {
             var responseJson = await response.json();
 
-            setNetworks(responseJson.scanResults);
+            setNetworks(Array.from(responseJson.scanResults));
 
             console.log("Success Getting Wifi Networks");
             console.log(responseJson);
