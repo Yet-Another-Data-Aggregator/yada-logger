@@ -20,6 +20,10 @@ export default function NetworkConnection() {
         getWifiNetworks();
     };
 
+    const connectToTestNetwork = () => {
+        attemptConnection("DATA_ERROR_24G", "SmileyApple205");
+    };
+
     function getWifiNetworks() {
         fetch("/rescan_wifi").then(async (response) => {
             var responseJson = await response.json();
@@ -31,6 +35,22 @@ export default function NetworkConnection() {
         }).catch((reason) => {
             console.log("ERROR:" + reason);
         });
+    }
+
+    function attemptConnection(ssid: string, passkey: string) {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey})
+        };
+
+        fetch("/enable_wifi", requestOptions).then(async (response) => {
+            var responseJson = await response.json();
+
+            console.log(responseJson);
+        }).catch((reason) => {
+            console.log("Something went wrong: " + reason);
+        })
     }
 
     function sendTestPost(message: string) {
@@ -91,6 +111,7 @@ export default function NetworkConnection() {
 
             <Button onClick={sendTestGet}>Ping</Button>
             <Button onClick={refreshNetworks}>Refresh</Button>
+            <Button onClick={connectToTestNetwork}>Try To Connect To Data Error</Button>
         </Container>
     );
 }
