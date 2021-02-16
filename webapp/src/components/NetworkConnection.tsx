@@ -1,8 +1,9 @@
-import React from "react";
+import React, {useState} from "react";
 import { List, ListItem, ListItemText, Icon, ListItemIcon, Button, Container } from "@material-ui/core";
 import { Wifi } from "@material-ui/icons";
 
 export default function NetworkConnection() {
+    const [availableNetworks, setNetworks] : [any, any] = useState([]);
 
     const sendTestGet = () => {
         fetch("/ping").then(async (response) => {
@@ -15,8 +16,7 @@ export default function NetworkConnection() {
         })
     };
 
-    const sayHiToServer = () => {
-        sendTestPost("Hey server!");
+    const refreshNetworks = () => {
         getWifiNetworks();
     };
 
@@ -24,8 +24,10 @@ export default function NetworkConnection() {
         fetch("/rescan_wifi").then(async (response) => {
             var responseJson = await response.json();
 
+            setNetworks(responseJson.scanResults);
+
             console.log("Success Getting Wifi Networks");
-            console.log(responseJson);
+            console.log(availableNetworks);
         }).catch((reason) => {
             console.log("ERROR:"+reason);
         });
@@ -57,13 +59,23 @@ export default function NetworkConnection() {
                     </ListItemIcon>
                     <ListItemText className="flex justify-center" primary="This is where" />
                 </ListItem>
+
+                {availableNetworks.map((network: { ssid: string }) => (
+                    <ListItem className="border">
+                    <ListItemIcon>
+                        <Wifi />
+                    </ListItemIcon>
+                    <ListItemText className="flex justify-center" primary={network.ssid} />
+                    </ListItem>
+                ))}
+
                 <ListItemText primary="my wifi networks" />
                 <ListItemText primary="would be displayed" />
                 <ListItemText primary="if I could find any!" />
             </List>
 
             <Button onClick={sendTestGet}>Ping</Button>
-            <Button onClick={sayHiToServer}>Say Hello To The Server</Button>
+            <Button onClick={refreshNetworks}>Refresh</Button>
         </Container>
     );
 }
