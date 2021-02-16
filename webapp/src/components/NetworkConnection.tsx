@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { List, ListItem, ListItemText, Icon, ListItemIcon, Button, Container } from '@material-ui/core';
+import { List, ListItem, ListItemText, Icon, ListItemIcon, Button, Container, TextField } from '@material-ui/core';
 import { Wifi, Lock, LockOpen } from '@material-ui/icons';
 
 export default function NetworkConnection() {
     const [availableNetworks, setNetworks]: [Array<any>, any] = useState([]);
+    const [selectedNetworkIndex, setSelectedNetworkIndex]: [number, any] = useState(-1);
 
     const sendTestGet = () => {
         fetch("/ping").then(async (response) => {
@@ -78,8 +79,13 @@ export default function NetworkConnection() {
                 <div>
                     {availableNetworks.map((network, index) => {
                         const encIcon = (network.encrypted) ? (<Lock/>) : (<LockOpen/>);
+                        const passkeyInput = (index == selectedNetworkIndex) ? (
+                        <ListItem>
+                            <Button variant="outlined" className="pl-10">Connect</Button>
+                        </ListItem>
+                        ) : null;
 
-                        return (<ListItem key={index} className="border">
+                        return (<ListItem key={index} className="border" onClick={(e) => {setSelectedNetworkIndex(index)}}>
                             <ListItemIcon>
                                 <Wifi />
                             </ListItemIcon>
@@ -87,6 +93,7 @@ export default function NetworkConnection() {
                             <ListItemIcon>
                                 {encIcon}
                             </ListItemIcon>
+                                {passkeyInput}
                         </ListItem>)
                     })}
                 </div>
