@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { List, ListItem, ListItemText, Icon, ListItemIcon, Button, Container } from '@material-ui/core';
-import { Wifi } from '@material-ui/icons';
+import { Wifi, Lock, LockOpen } from '@material-ui/icons';
 
 export default function NetworkConnection() {
     const [availableNetworks, setNetworks]: [Array<any>, any] = useState([]);
@@ -28,8 +28,6 @@ export default function NetworkConnection() {
 
             console.log("Success Getting Wifi Networks");
             console.log(responseJson);
-            console.log(availableNetworks);
-            console.log(responseJson.scan_results);
         }).catch((reason) => {
             console.log("ERROR:" + reason);
         });
@@ -59,11 +57,16 @@ export default function NetworkConnection() {
             return (
                 <div>
                     {availableNetworks.map((network, index) => {
+                        const encIcon = (network.encrypted) ? (<Lock/>) : (<LockOpen/>);
+
                         return (<ListItem key={index} className="border">
                             <ListItemIcon>
                                 <Wifi />
                             </ListItemIcon>
                             <ListItemText className="flex justify-center" primary={network.ssid} />
+                            <ListItemIcon>
+                                {encIcon}
+                            </ListItemIcon>
                         </ListItem>)
                     })}
                 </div>
