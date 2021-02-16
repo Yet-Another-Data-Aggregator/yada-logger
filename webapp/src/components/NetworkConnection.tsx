@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
-import { List, ListItem, ListItemText, Icon, ListItemIcon, Button, Container, TextField } from '@material-ui/core';
+import React, { ChangeEvent, useState } from 'react';
+import { List, ListItem, ListItemText, Icon, ListItemIcon, Button, Container, TextField, Collapse, Card} from '@material-ui/core';
 import { Wifi, Lock, LockOpen } from '@material-ui/icons';
 
 export default function NetworkConnection() {
     const [availableNetworks, setNetworks]: [Array<any>, any] = useState([]);
     const [selectedNetworkIndex, setSelectedNetworkIndex]: [number, any] = useState(-1);
+    const [securityKey, setSecurityKey]: [string, any] = useState("");
+
+    const onSecurityKeyChange = (event : any) => {
+        console.log(event.target.value);
+        setSecurityKey(event.target.value);
+      };
 
     const sendTestGet = () => {
         fetch("/ping").then(async (response) => {
@@ -45,6 +51,8 @@ export default function NetworkConnection() {
             body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey})
         };
 
+        console.log('sending connection message with ' + ssid +  ':' + passkey);
+
         fetch("/enable_wifi", requestOptions).then(async (response) => {
             var responseJson = await response.json();
 
@@ -78,23 +86,31 @@ export default function NetworkConnection() {
             return (
                 <div>
                     {availableNetworks.map((network, index) => {
-                        const encIcon = (network.encrypted) ? (<Lock/>) : (<LockOpen/>);
-                        const passkeyInput = (index == selectedNetworkIndex) ? (
-                        <ListItem>
-                            <Button variant="outlined" className="pl-10">Connect</Button>
-                        </ListItem>
+                        const encIcon = (network.encrypted) ? (<Lock className="mr-5"/>) : (<LockOpen className="mr-5"/>);
+
+                        const connectionPrompt = (index == selectedNetworkIndex) ? (
+                            <div className="my-5 flex space-x-4 justify-center">
+                                <TextField variant="outlined" size="small" label="Security Key" onChange={onSecurityKeyChange}/>
+                                <Button variant="outlined" className="ml-5" onClick={(e) => {
+                                    attemptConnection(network.ssid, securityKey);
+                                }}>Connect</Button>
+                            </div>
                         ) : null;
 
-                        return (<ListItem key={index} className="border" onClick={(e) => {setSelectedNetworkIndex(index)}}>
-                            <ListItemIcon>
-                                <Wifi />
-                            </ListItemIcon>
+                        return (
+                        <Card key={index} className="border" onClick={(e) => {setSelectedNetworkIndex(index)}}>
+                            <div className="flex">
+                            <Wifi className="ml-5"/>
+                  
                             <ListItemText className="flex justify-center" primary={network.ssid} />
-                            <ListItemIcon>
+                            
                                 {encIcon}
-                            </ListItemIcon>
-                                {passkeyInput}
-                        </ListItem>)
+                            </div>
+
+                            {connectionPrompt} 
+                        </Card>
+                        
+                        )
                     })}
                 </div>
             )
