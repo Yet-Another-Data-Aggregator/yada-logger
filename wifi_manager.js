@@ -281,7 +281,7 @@ module.exports = function () {
         if (result_ip) {
           console.log("\nWifi connection is enabled with IP: " + result_ip);
           console.log(
-            "Proceeding to overwrite current wifi connection settings..."
+            "\nProceeding to overwrite current wifi connection settings..."
           );
           //return callback(null);
         }
