@@ -54,7 +54,7 @@ export default function NetworkConnection() {
     const NetworkList = (availableNetworks: Array<{ ssid: string }>) => {
         console.log(availableNetworks);
 
-        if (availableNetworks.length > 0) {
+        if (availableNetworks && availableNetworks.length > 0) {
             return (
                 <div>
                     {availableNetworks.map((network) => {
