@@ -108,7 +108,7 @@ app.post("/enable_wifi", function (request, response) {
     console.log(
       "waiting 10 seconds then checking if we successfully connected"
     );
-    setTimeout(checkWifiEnabledFallbackToAP(), 10000);
+    setTimeout(()=>{checkWifiEnabledFallbackToAP()}, 10000);
 
     server = app.listen(5000, function () {
       var host = ip.address();
