@@ -132,9 +132,7 @@ export default function NetworkConnection() {
                 {NetworkList(availableNetworks)}
             </List>
 
-            <Button onClick={sendTestGet}>Ping</Button>
             <Button onClick={refreshNetworks}>Refresh</Button>
-            <Button onClick={connectToTestNetwork}>Try To Connect To Data Error</Button>
         </Container>
     );
 }
