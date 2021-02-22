@@ -1,138 +1,184 @@
-import React, { ChangeEvent, useState } from 'react';
-import { List, ListItem, ListItemText, Icon, ListItemIcon, Button, Container, TextField, Collapse, Card} from '@material-ui/core';
-import { Wifi, Lock, LockOpen } from '@material-ui/icons';
+import React, { ChangeEvent, useState } from "react";
+import {
+  List,
+  ListItem,
+  ListItemText,
+  Icon,
+  ListItemIcon,
+  Button,
+  Container,
+  TextField,
+  Collapse,
+  Card,
+} from "@material-ui/core";
+import { Wifi, Lock, LockOpen } from "@material-ui/icons";
 
 export default function NetworkConnection() {
-    const [availableNetworks, setNetworks]: [Array<any>, any] = useState([]);
-    const [selectedNetworkIndex, setSelectedNetworkIndex]: [number, any] = useState(-1);
-    const [securityKey, setSecurityKey]: [string, any] = useState("");
+  const [availableNetworks, setNetworks]: [Array<any>, any] = useState([]);
+  const [selectedNetworkIndex, setSelectedNetworkIndex]: [
+    number,
+    any
+  ] = useState(-1);
+  const [securityKey, setSecurityKey]: [string, any] = useState("");
 
-    const onSecurityKeyChange = (event : any) => {
-        console.log(event.target.value);
-        setSecurityKey(event.target.value);
-      };
+  const onSecurityKeyChange = (event: any) => {
+    console.log(event.target.value);
+    setSecurityKey(event.target.value);
+  };
 
-    const sendTestGet = () => {
-        fetch("/ping").then(async (response) => {
-            var responseJson = await response.json();
+  const sendTestGet = () => {
+    fetch("/ping")
+      .then(async (response) => {
+        var responseJson = await response.json();
 
-            alert(responseJson.data);
-            console.log(responseJson.data);
-        }).catch((reason) => {
-            console.log("Something went wrong: " + reason);
-        })
+        alert(responseJson.data);
+        console.log(responseJson.data);
+      })
+      .catch((reason) => {
+        console.log("Something went wrong: " + reason);
+      });
+  };
+
+  const refreshNetworks = () => {
+    getWifiNetworks();
+  };
+
+  const connectToTestNetwork = () => {
+    attemptConnection("DATA_ERROR_24G", "SmileyApple205");
+  };
+
+  function getWifiNetworks() {
+    fetch("/rescan_wifi")
+      .then(async (response) => {
+        var responseJson = await response.json();
+
+        setNetworks(responseJson.scan_results);
+
+        console.log("Success Getting Wifi Networks");
+        console.log(responseJson);
+      })
+      .catch((reason) => {
+        console.log("ERROR:" + reason);
+      });
+  }
+
+  function attemptConnection(ssid: string, passkey: string) {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey }),
     };
 
-    const refreshNetworks = () => {
-        getWifiNetworks();
+    console.log("sending connection message with " + ssid + ":" + passkey);
+
+    fetch("/enable_wifi", requestOptions)
+      .then(async (response) => {
+        var responseJson = await response.json();
+
+        console.log(responseJson);
+      })
+      .catch((reason) => {
+        console.log("Something went wrong: " + reason);
+      });
+  }
+
+  function sendTestPost(message: string) {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: message }),
     };
 
-    const connectToTestNetwork = () => {
-        attemptConnection("DATA_ERROR_24G", "SmileyApple205");
-    };
+    fetch("/testpost", requestOptions)
+      .then(async (response) => {
+        var responseJson = await response.json();
 
-    function getWifiNetworks() {
-        fetch("/rescan_wifi").then(async (response) => {
-            var responseJson = await response.json();
+        alert(responseJson.data);
+        console.log(responseJson.data);
+      })
+      .catch((reason) => {
+        console.log("Something went wrong: " + reason);
+      });
+  }
 
-            setNetworks(responseJson.scan_results);
+  const NetworkList = (availableNetworks: Array<any>) => {
+    console.log(availableNetworks);
 
-            console.log("Success Getting Wifi Networks");
-            console.log(responseJson);
-        }).catch((reason) => {
-            console.log("ERROR:" + reason);
-        });
-    }
+    if (availableNetworks && availableNetworks.length > 0) {
+      return (
+        <div>
+          {availableNetworks.map((network, index) => {
+            const encIcon = network.encrypted ? (
+              <Lock className="mr-5" />
+            ) : (
+              <LockOpen className="mr-5" />
+            );
 
-    function attemptConnection(ssid: string, passkey: string) {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey})
-        };
-
-        console.log('sending connection message with ' + ssid +  ':' + passkey);
-
-        fetch("/enable_wifi", requestOptions).then(async (response) => {
-            var responseJson = await response.json();
-
-            console.log(responseJson);
-        }).catch((reason) => {
-            console.log("Something went wrong: " + reason);
-        })
-    }
-
-    function sendTestPost(message: string) {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data: message })
-        };
-
-        fetch("/testpost", requestOptions).then(async (response) => {
-            var responseJson = await response.json();
-
-            alert(responseJson.data);
-            console.log(responseJson.data);
-        }).catch((reason) => {
-            console.log("Something went wrong: " + reason);
-        })
-    }
-
-    const NetworkList = (availableNetworks: Array<any>) => {
-        console.log(availableNetworks);
-
-        if (availableNetworks && availableNetworks.length > 0) {
-            return (
-                <div>
-                    {availableNetworks.map((network, index) => {
-                        const encIcon = (network.encrypted) ? (<Lock className="mr-5"/>) : (<LockOpen className="mr-5"/>);
-
-                        const connectionPrompt = (index == selectedNetworkIndex) ? (
-                            <div className="my-5 flex space-x-4 justify-center">
-                                <TextField variant="outlined" size="small" label="Security Key" onChange={onSecurityKeyChange}/>
-                                <Button variant="outlined" className="ml-5" onClick={(e) => {
-                                    attemptConnection(network.ssid, securityKey);
-                                }}>Connect</Button>
-                            </div>
-                        ) : null;
-
-                        return (
-                        <Card key={index} className="border" onClick={(e) => {setSelectedNetworkIndex(index)}}>
-                            <div className="flex">
-                            <Wifi className="ml-5"/>
-                  
-                            <ListItemText className="flex justify-center" primary={network.ssid} />
-                            
-                                {encIcon}
-                            </div>
-
-                            {connectionPrompt} 
-                        </Card>
-                        
-                        )
-                    })}
+            const connectionPrompt =
+              index == selectedNetworkIndex ? (
+                <div className="my-5 flex space-x-4 justify-center">
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    label="Security Key"
+                    onChange={onSecurityKeyChange}
+                  />
+                  <Button
+                    variant="outlined"
+                    className="ml-5"
+                    onClick={(e) => {
+                      attemptConnection(network.ssid, securityKey);
+                    }}
+                  >
+                    Connect
+                  </Button>
                 </div>
-            )
-        }
-        else {
+              ) : null;
+
             return (
-                <div>
-                    <ListItem className="border">
-                        <ListItemText className="flex justify-center" primary="Didn't find any networks." />
-                    </ListItem>
+              <Card
+                key={index}
+                className="border"
+                onClick={(e) => {
+                  setSelectedNetworkIndex(index);
+                }}
+              >
+                <div className="flex">
+                  <Wifi className="ml-5" />
+
+                  <ListItemText
+                    className="flex justify-center"
+                    primary={network.ssid}
+                  />
+
+                  {encIcon}
                 </div>
-            )
-        }
+
+                {connectionPrompt}
+              </Card>
+            );
+          })}
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <ListItem className="border">
+            <ListItemText
+              className="flex justify-center"
+              primary="Didn't find any networks."
+            />
+          </ListItem>
+        </div>
+      );
     }
+  };
 
-    return (
-        <Container>
-            <List className="w-1/2 border">
-                {NetworkList(availableNetworks)}
-            </List>
+  return (
+    <Container>
+      <List className="w-1/2 border">{NetworkList(availableNetworks)}</List>
 
-            <Button onClick={refreshNetworks}>Refresh</Button>
-        </Container>
-    );
+      <Button onClick={refreshNetworks}>Refresh</Button>
+    </Container>
+  );
 }

@@ -1,8 +1,8 @@
 # Resources
 
 ## How to set up a NodeJS server to serve the react app.
-https://medium.com/@maison.moa/setting-up-an-express-backend-server-for-create-react-app-bc7620b20a61
 
+https://medium.com/@maison.moa/setting-up-an-express-backend-server-for-create-react-app-bc7620b20a61
 
 # Getting Started with Create React App
 

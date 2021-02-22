@@ -22,6 +22,7 @@
     "ip": "^1.1.5"
   },
   "devDependencies": {
+    "pre-commit": "^1.2.2",
     "prettier": "2.2.1"
   }
 }
