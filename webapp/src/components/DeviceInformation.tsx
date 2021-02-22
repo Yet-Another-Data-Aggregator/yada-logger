@@ -12,25 +12,30 @@ import { Info, PermDeviceInformation } from "@material-ui/icons";
 
 export default function DeviceInformation() {
 
+    const [deviceInfo, setDeviceInfo] = useState(null);
     const [equipmentType, setEquipmentType] = useState('');
 
     const handleEquipmentChange = (e: ChangeEvent<{value: unknown}>) => {
         setEquipmentType(e.target.value as string);
     }
 
-    function getDeviceInfo(){
-        fetch("/devinfo")
+    function getDeviceInfo(){    
+        if(!deviceInfo) {
+    fetch("/devinfo")
       .then(async (response) => {
         var responseJson = await response.json();
 
         console.log(responseJson);
+        setDeviceInfo(responseJson);
       })
       .catch((reason) => {
         console.log("Something went wrong: " + reason);
       });
     }
+    }
 
     getDeviceInfo();
+
     return (
         <Container className="w-11/12">
         <Grid container direction="column" alignItems='flex-start' spacing={2}>

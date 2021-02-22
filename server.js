@@ -75,10 +75,17 @@ app.get("/rescan_wifi", function (request, response) {
 
 app.get("/devinfo", function (request, response) {
   var devinfo = { ip: "0.0.0.0", mac: "0" };
+  const wifiInfo = os.networkInterfaces()["wlan0"];
 
   console.log("Client GET /devinfo");
 
-  response.send(os.networkInterfaces());
+  if (wifiInfo) {
+    response.send(wifiInfo);
+  } else {
+    console.error(
+      "Can't retrieve device info, network interface for wlan0 not present."
+    );
+  }
 });
 
 /************************************************/
