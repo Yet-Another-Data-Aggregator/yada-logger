@@ -12,7 +12,7 @@ import { Info, PermDeviceInformation } from "@material-ui/icons";
 
 export default function DeviceInformation() {
 
-    const [deviceInfo, setDeviceInfo] = useState(null);
+    const [deviceInfo, setDeviceInfo] : [any, any] = useState(null);
     const [equipmentType, setEquipmentType] = useState('');
 
     const handleEquipmentChange = (e: ChangeEvent<{value: unknown}>) => {
@@ -24,9 +24,10 @@ export default function DeviceInformation() {
     fetch("/devinfo")
       .then(async (response) => {
         var responseJson = await response.json();
+        const ipv4info = responseJson[0];
 
-        console.log(responseJson);
-        setDeviceInfo(responseJson);
+        console.log(ipv4info);
+        setDeviceInfo(ipv4info);
       })
       .catch((reason) => {
         console.log("Something went wrong: " + reason);
@@ -40,11 +41,11 @@ export default function DeviceInformation() {
         <Container className="w-11/12">
         <Grid container direction="column" alignItems='flex-start' spacing={2}>
             <Grid item>Logger Settings</Grid>
-            <Grid item>IP: 0.0.0.0 
+            <Grid item>IP: {deviceInfo?.address ?? "<unknown>"}
                 <Info className="pl-1"/>
             </Grid>
 
-            <Grid item>MAC: 00:00:00:00:00:00
+            <Grid item>MAC: {deviceInfo?.mac ?? "<unknown>"}
                 <PermDeviceInformation className="pl-1"/>
             </Grid>
 
