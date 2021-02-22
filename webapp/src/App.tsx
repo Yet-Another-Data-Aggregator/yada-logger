@@ -2,6 +2,7 @@ import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import NetworkConnection from "./components/NetworkConnection";
+import DeviceInformation from "./components/DeviceInformation";
 
 function App() {
   // Fetches our GET route from the Express server. (Note the route we are fetching matches the GET route from server.js
@@ -17,7 +18,7 @@ function App() {
 
   return (
     <div className="App">
-      <NetworkConnection />
+      <DeviceInformation />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const ip = require("ip");
+const os = require("os");
 const wifi_manager = require("./wifi_manager")();
 const iwlist = require("./iwlist");
 var bodyParser = require("body-parser"); //needed to get data from body of POST requests
@@ -70,6 +71,14 @@ app.get("/rescan_wifi", function (request, response) {
   iwlist(function (error, result) {
     log_error_send_success_with(result[0], error, response);
   });
+});
+
+app.get("/devinfo", function (request, response) {
+  var devinfo = { ip: "0.0.0.0", mac: "0" };
+
+  console.log("Client GET /devinfo");
+
+  log_error_send_success_with(os.networkInterfaces());
 });
 
 /************************************************/
