@@ -78,7 +78,7 @@ app.get("/devinfo", function (request, response) {
 
   console.log("Client GET /devinfo");
 
-  log_error_send_success_with(os.networkInterfaces());
+  response.send(os.networkInterfaces());
 });
 
 /************************************************/
