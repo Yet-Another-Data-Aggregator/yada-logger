@@ -1,0 +1,8 @@
+@import './designLanguage/_variables';
+@import './components/_staticNavbar';
+@import './components/_routes';
+@import './components/_app';
+
+* {
+    overflow: hidden;
+}
