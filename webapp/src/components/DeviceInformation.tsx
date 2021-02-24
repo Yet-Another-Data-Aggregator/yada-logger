@@ -71,20 +71,7 @@ export default function DeviceInformation() {
                 </Grid>
 
                 <Grid item>
-                    <Select
-                        onChange={handleEquipmentChange}
-                        value={equipmentType}
-                    >
-                        {equipmentTypeList ? (
-                            equipmentTypeList?.map((e: string, index: any) => {
-                                return (
-                                    <MenuItem value={e}>Equipment {e}</MenuItem>
-                                );
-                            })
-                        ) : (
-                            <MenuItem>No Equipment Types</MenuItem>
-                        )}
-                    </Select>
+                    <Button variant="outlined">Save</Button>
                 </Grid>
             </Grid>
         </Container>
