@@ -1,21 +1,9 @@
-import React, { ChangeEvent, useState } from 'react';
-import {
-    Grid,
-    Select,
-    Button,
-    Container,
-    TextField,
-    Card,
-    MenuItem,
-} from '@material-ui/core';
+import React, { useState } from 'react';
+import { Grid, Button, Container, TextField } from '@material-ui/core';
 import { Info, PermDeviceInformation } from '@material-ui/icons';
 
 export default function DeviceInformation() {
     const [deviceInfo, setDeviceInfo]: [any, any] = useState(null);
-    const [equipmentTypeList, setEquipmentTypeList]: [any, any] = useState(
-        null
-    );
-    const [equipmentType, setEquipmentType] = useState('');
     const [deviceName, setDeviceName] = useState('');
     const [siteId, setSiteId] = useState('');
 
@@ -71,9 +59,8 @@ export default function DeviceInformation() {
         saveDeviceInfo(deviceName, siteId);
     };
 
+    //Get the device info once when the component is loaded.
     getDeviceInfo();
-
-    //TODO: Get equipment types from firestore.
 
     return (
         <Container className="w-11/12">

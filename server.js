@@ -55,19 +55,11 @@ function checkWifiEnabledFallbackToAP() {
     });
 }
 
+/*******ROUTE HANDLERS****************/
+
 //Serve the webapp on the default route
 app.get('/', (req, res) => {
     res.sendFile(path.join(webappBuildPath, 'index.html'));
-});
-
-//if they request ping, pong back
-app.get('/ping', (req, res) => {
-    res.send({ data: 'pong' });
-});
-
-app.post('/testpost', (req, res) => {
-    var msg = req.body.data;
-    console.log('Client sent me: ' + msg);
 });
 
 //route handler to rescan wifi
@@ -78,8 +70,9 @@ app.get('/rescan_wifi', function (request, response) {
     });
 });
 
+//route handler for GET device info
 app.get('/devinfo', function (request, response) {
-    var devinfo = { ip: '0.0.0.0', mac: '0' };
+    var devinfo = { ip: '<unknown>', mac: '<unknown>' };
     const wifiInfo = os.networkInterfaces()['wlan0'];
 
     console.log('Client GET /devinfo');

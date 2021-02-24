@@ -66,8 +66,6 @@ export function StaticNavItem(props: StaticNavItemProp) {
  * @param props
  */
 export default function StaticNavbar(props: navbarProps) {
-    let location = useLocation();
-
     function createRoute(child: ReactElement) {
         return <Route path={child.props.route}>{child.props.children}</Route>;
     }
