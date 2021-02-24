@@ -16,9 +16,15 @@ export default function DeviceInformation() {
         null
     );
     const [equipmentType, setEquipmentType] = useState('');
+    const [deviceName, setDeviceName] = useState('');
+    const [siteId, setSiteId] = useState('');
 
-    const handleEquipmentChange = (e: ChangeEvent<{ value: unknown }>) => {
-        setEquipmentType(e.target.value as string);
+    const onDeviceNameChange = (event: any) => {
+        setDeviceName(event.target.value);
+    };
+
+    const onSiteIdChange = (event: any) => {
+        setSiteId(event.target.value);
     };
 
     function getDeviceInfo() {
@@ -36,6 +42,34 @@ export default function DeviceInformation() {
                 });
         }
     }
+
+    function saveDeviceInfo(devname: string, siteid: string) {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: devname, siteid: siteid }),
+        };
+
+        console.log(
+            'Sending device info message with ' + devname + ':' + siteid
+        );
+
+        fetch('/devinfo', requestOptions)
+            .then(async (response) => {
+                var responseJson = await response.json();
+
+                console.log(responseJson);
+            })
+            .catch((reason) => {
+                console.log('Something went wrong: ' + reason);
+            });
+    }
+
+    const handleSaveButton = () => {
+        console.log('Saving device name: ' + deviceName);
+        console.log('Saving site id: ' + siteId);
+        saveDeviceInfo(deviceName, siteId);
+    };
 
     getDeviceInfo();
 
@@ -63,15 +97,27 @@ export default function DeviceInformation() {
                 </Grid>
 
                 <Grid item>
-                    <TextField variant="outlined" label="Device Name" />
+                    <TextField
+                        variant="outlined"
+                        label="Device Name"
+                        onChange={onDeviceNameChange}
+                        value={deviceName}
+                    />
                 </Grid>
 
                 <Grid item>
-                    <TextField variant="outlined" label="Site ID (optional)" />
+                    <TextField
+                        variant="outlined"
+                        label="Site ID (optional)"
+                        onChange={onSiteIdChange}
+                        value={siteId}
+                    />
                 </Grid>
 
                 <Grid item>
-                    <Button variant="outlined">Save</Button>
+                    <Button variant="outlined" onClick={handleSaveButton}>
+                        Save
+                    </Button>
                 </Grid>
             </Grid>
         </Container>
