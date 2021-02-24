@@ -105,8 +105,7 @@ app.post('/devinfo', function (request, response) {
     config.config.devname = dev_info.name;
     config.config.siteid = dev_info.siteid;
 
-    //TODO: Change to configPath once confirmed working.
-    fs.writeFileSync('./config_modified.ini', ini.stringify(config));
+    fs.writeFileSync(configPath, ini.stringify(config));
 });
 
 /************************************************/
