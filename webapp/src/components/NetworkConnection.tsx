@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
-import {
-    List,
-    ListItem,
-    ListItemText,
-    Button,
-    Container,
-    TextField,
-    Card,
-} from '@material-ui/core';
-import { Wifi, Lock, LockOpen } from '@material-ui/icons';
+import { List, ListItem, ListItemText, Button } from '@material-ui/core';
+import NetworkItem from './NetworkItem';
 
 export default function NetworkConnection() {
     const [availableNetworks, setNetworks]: [Array<any>, any] = useState([]);
@@ -16,12 +8,6 @@ export default function NetworkConnection() {
         number,
         any
     ] = useState(-1);
-    const [securityKey, setSecurityKey]: [string, any] = useState('');
-
-    const onSecurityKeyChange = (event: any) => {
-        console.log(event.target.value);
-        setSecurityKey(event.target.value);
-    };
 
     const refreshNetworks = () => {
         getWifiNetworks();
@@ -42,109 +28,37 @@ export default function NetworkConnection() {
             });
     }
 
-    function attemptConnection(ssid: string, passkey: string) {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey }),
-        };
-
-        console.log('sending connection message with ' + ssid + ':' + passkey);
-
-        fetch('/enable_wifi', requestOptions)
-            .then(async (response) => {
-                var responseJson = await response.json();
-
-                console.log(responseJson);
-            })
-            .catch((reason) => {
-                console.log('Something went wrong: ' + reason);
-            });
-    }
-
-    const NetworkList = (availableNetworks: Array<any>) => {
-        console.log(availableNetworks);
-
-        if (availableNetworks && availableNetworks.length > 0) {
-            return (
-                <div>
-                    {availableNetworks.map((network, index) => {
-                        const encIcon = network.encrypted ? (
-                            <Lock className="mr-5" />
-                        ) : (
-                            <LockOpen className="mr-5" />
-                        );
-
-                        const connectionPrompt =
-                            index == selectedNetworkIndex ? (
-                                <div className="my-5 flex space-x-4 justify-center">
-                                    <TextField
-                                        variant="outlined"
-                                        size="small"
-                                        label="Security Key"
-                                        onChange={onSecurityKeyChange}
-                                    />
-                                    <Button
-                                        variant="outlined"
-                                        className="ml-5"
-                                        onClick={(e) => {
-                                            attemptConnection(
-                                                network.ssid,
-                                                securityKey
-                                            );
-                                        }}
-                                    >
-                                        Connect
-                                    </Button>
-                                </div>
-                            ) : null;
-
-                        return (
-                            <Card
-                                key={index}
-                                className="border"
-                                onClick={(e) => {
-                                    setSelectedNetworkIndex(index);
-                                }}
-                            >
-                                <div className="flex">
-                                    <Wifi className="ml-5" />
-
-                                    <ListItemText
-                                        className="flex justify-center"
-                                        primary={network.ssid}
-                                    />
-
-                                    {encIcon}
-                                </div>
-
-                                {connectionPrompt}
-                            </Card>
-                        );
-                    })}
-                </div>
-            );
-        } else {
-            return (
-                <div>
-                    <ListItem className="border">
-                        <ListItemText
-                            className="flex justify-center"
-                            primary="Didn't find any networks."
-                        />
-                    </ListItem>
-                </div>
-            );
-        }
-    };
-
     return (
-        <Container>
-            <List className="w-1/2 border">
-                {NetworkList(availableNetworks)}
+        <div className="networkConnection">
+            <List className="networkList">
+                {availableNetworks && availableNetworks.length > 0 ? (
+                    <div>
+                        {availableNetworks.map((network, index) => {
+                            return (
+                                <NetworkItem
+                                    key={index}
+                                    network={network}
+                                    selected={index === selectedNetworkIndex}
+                                    onClick={() => {
+                                        setSelectedNetworkIndex(index);
+                                    }}
+                                />
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="floatingCard">
+                        <ListItem className="border">
+                            <ListItemText
+                                className="floatingCard"
+                                primary="Didn't find any networks."
+                            />
+                        </ListItem>
+                    </div>
+                )}
             </List>
 
             <Button onClick={refreshNetworks}>Refresh</Button>
-        </Container>
+        </div>
     );
 }

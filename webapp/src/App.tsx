@@ -1,12 +1,6 @@
 import React from 'react';
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    useHistory,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Animated } from 'react-animated-css';
-import logo from './logo.svg';
 import './App.scss';
 import NetworkConnection from './components/NetworkConnection';
 import DeviceInformation from './components/DeviceInformation';

@@ -1,4 +1,10 @@
 @import './designLanguage/_variables';
+@import './designLanguage/_types';
+@import './designLanguage/_buttons';
+@import './designLanguage/_forms';
+@import './designLanguage/_cards';
+@import './designLanguage/_tables';
+
 @import './components/_staticNavbar';
 @import './components/_routes';
 @import './components/_app';
