@@ -49,7 +49,7 @@ export default function NetworkConnection() {
                     })}
                 </ul>
             ) : (
-                <div className="networkItem">Didn't find any networks.</div>
+                <div className="noNetworks">[No Networks Found]</div>
             )}
 
             <Button className="button" onClick={refreshNetworks}>

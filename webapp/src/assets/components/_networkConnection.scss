@@ -19,4 +19,10 @@
         width: 80%;
         height: 3rem;
     }
+
+    .noNetworks {
+        display: flex;
+        justify-content: center;
+        color: $lightGray;
+    }
 }
