@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, ListItemText, TextField, Card } from '@material-ui/core';
+import { Button, Input } from 'reactstrap';
 import { Wifi, Lock, LockOpen } from '@material-ui/icons';
 
 export default function NetworkItem(props: any) {
@@ -30,22 +30,21 @@ export default function NetworkItem(props: any) {
     }
 
     const encIcon = props.network.encrypted ? (
-        <Lock className="mr-5" />
+        <Lock className="rightIcon" />
     ) : (
-        <LockOpen className="mr-5" />
+        <LockOpen className="rightIcon" />
     );
 
     const connectionPrompt = props.selected ? (
-        <div className="my-5 flex space-x-4 justify-center">
-            <TextField
+        <div className="inline">
+            <Input
                 variant="outlined"
-                size="small"
-                label="Security Key"
+                className="input"
                 onChange={onSecurityKeyChange}
             />
             <Button
                 variant="outlined"
-                className="ml-5"
+                className="button"
                 onClick={() => {
                     attemptConnection(props.network.ssid, securityKey);
                 }}
@@ -56,19 +55,16 @@ export default function NetworkItem(props: any) {
     ) : null;
 
     return (
-        <Card className="border" onClick={props.onClick}>
-            <div className="flex">
-                <Wifi className="ml-5" />
+        <div className="networkItem floatingCard" onClick={props.onClick}>
+            <div className="inline">
+                <Wifi className="leftIcon" />
 
-                <ListItemText
-                    className="flex justify-center"
-                    primary={props.network.ssid}
-                />
+                {props.network.ssid}
 
                 {encIcon}
             </div>
 
             {connectionPrompt}
-        </Card>
+        </div>
     );
 }

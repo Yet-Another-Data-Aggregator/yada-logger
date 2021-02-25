@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { List, ListItem, ListItemText, Button } from '@material-ui/core';
+import { Button } from 'reactstrap';
 import NetworkItem from './NetworkItem';
 
 export default function NetworkConnection() {
@@ -10,6 +10,7 @@ export default function NetworkConnection() {
     ] = useState(-1);
 
     const refreshNetworks = () => {
+        setSelectedNetworkIndex(-1);
         getWifiNetworks();
     };
 
@@ -30,35 +31,30 @@ export default function NetworkConnection() {
 
     return (
         <div className="networkConnection">
-            <List className="networkList">
-                {availableNetworks && availableNetworks.length > 0 ? (
-                    <div>
-                        {availableNetworks.map((network, index) => {
-                            return (
-                                <NetworkItem
-                                    key={index}
-                                    network={network}
-                                    selected={index === selectedNetworkIndex}
-                                    onClick={() => {
-                                        setSelectedNetworkIndex(index);
-                                    }}
-                                />
-                            );
-                        })}
-                    </div>
-                ) : (
-                    <div className="floatingCard">
-                        <ListItem className="border">
-                            <ListItemText
-                                className="floatingCard"
-                                primary="Didn't find any networks."
-                            />
-                        </ListItem>
-                    </div>
-                )}
-            </List>
+            <h1>Available Networks</h1>
 
-            <Button onClick={refreshNetworks}>Refresh</Button>
+            {availableNetworks && availableNetworks.length > 0 ? (
+                <ul className="networkList">
+                    {availableNetworks.map((network, index) => {
+                        return (
+                            <NetworkItem
+                                key={index}
+                                network={network}
+                                selected={index === selectedNetworkIndex}
+                                onClick={() => {
+                                    setSelectedNetworkIndex(index);
+                                }}
+                            />
+                        );
+                    })}
+                </ul>
+            ) : (
+                <div className="networkItem">Didn't find any networks.</div>
+            )}
+
+            <Button className="button" onClick={refreshNetworks}>
+                Refresh
+            </Button>
         </div>
     );
 }
