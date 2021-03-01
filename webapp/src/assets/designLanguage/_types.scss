@@ -1,0 +1,30 @@
+@mixin largeTitle {
+  font-size: 50px;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+}
+
+@mixin mediumSmallTitle {
+  font-size: 35px;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+}
+
+@mixin smallTitle {
+  font-size: 20px;
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+}
+
+@mixin link {
+  font-family: "Lato", sans-serif;
+  color: $companyName;
+  cursor: pointer;
+  user-select: none;
+}
+
+@mixin lightParagraph {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  opacity: 0.6;
+}

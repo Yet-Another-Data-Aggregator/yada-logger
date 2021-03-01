@@ -1,0 +1,29 @@
+{
+  "name": "yada-logger",
+  "version": "1.0.0",
+  "description": "## How to set up a NodeJS server to serve the react app. https://medium.com/@maison.moa/setting-up-an-express-backend-server-for-create-react-app-bc7620b20a61",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yet-Another-Data-Aggregator/yada-logger.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yet-Another-Data-Aggregator/yada-logger/issues"
+  },
+  "homepage": "https://github.com/Yet-Another-Data-Aggregator/yada-logger#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "ini": "^2.0.0",
+    "ip": "^1.1.5",
+    "reactstrap": "^8.9.0"
+  },
+  "devDependencies": {
+    "prettier": "2.2.1"
+  }
+}
