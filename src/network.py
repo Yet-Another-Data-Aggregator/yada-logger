@@ -48,3 +48,10 @@ class Datastore:
         :param data: The data as a dictionary to be added to this Logger's data
         """
         pass
+
+    def upload_fault(self, faults):
+        """
+        Uploads the given list of faults to the database
+
+        :param faults: The list of faults to upload.
+        """

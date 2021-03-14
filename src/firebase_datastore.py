@@ -1,13 +1,12 @@
-from datetime import datetime
-
-import firebase_admin
-from firebase_admin import credentials, firestore, storage
-
 import config
+import firebase_admin
+import os
+import os.path
+import re
 from config import Config
-
+from datetime import datetime
+from firebase_admin import credentials, firestore, storage
 from network import Datastore
-
 
 # Path of firebase template storage
 PREFIX = "ProfileScripts/Template/"
@@ -97,13 +96,15 @@ class FireDatastore(Datastore):
         config = Config.get()
         bucket = storage.bucket("yada-comp451.appspot.com")
 
-        downloaded_files = []
+        for key in filter(lambda section: section.startswith("channel/"), config.sections()):
+            config.remove_section(key)
+
+        for root, dirs, files in os.walk(channel_module_path):
+            for file in files:
+                os.remove(os.path.join(root, file))
 
         template = self.template_snapshot.to_dict()
         for channel_name, filename in template["channels"].items():
-            if filename in downloaded_files:
-                continue
-
             blob = bucket.blob(f"{PREFIX}{filename}")
             blob.download_to_filename(f"{channel_module_path}{channel_name}.py")
 
@@ -117,3 +118,5 @@ class FireDatastore(Datastore):
         self.db.collection("Loggers").document(logger_id).update({
             "data": firestore.firestore.ArrayUnion([data])
         })
+
+
