@@ -5,9 +5,8 @@ import config
 import file_utils
 from file_utils import Files
 
-# The module path to import from
-from network import Network
 
+# The module path to import from
 channel_module_path = "channels."
 
 
@@ -138,10 +137,8 @@ class ChannelManager:
 
         ChannelManager.run_times = next_run_times
 
-        Network.upload_data(result_values)
-
         # Return time to wait until next run
-        return sorted(ChannelManager.run_times)[0]
+        return sorted(ChannelManager.run_times)[0], result_values
 
 
 def add_to_multi_dict(key, value, dictionary):
