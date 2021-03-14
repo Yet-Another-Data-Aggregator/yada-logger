@@ -53,4 +53,4 @@ class Channel:
 
             return value
         except Exception as e:
-            return {}, [repr(e)]
+            return {}, repr(e)

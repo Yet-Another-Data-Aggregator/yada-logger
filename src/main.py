@@ -82,10 +82,15 @@ def run():
 
     # Run all channels and then sleep until the next channel should run
     while running:
-        wait_time, results = ChannelManager.run_channels()
+        wait_time, results, faults = ChannelManager.run_channels()
 
         if should_upload and results:
             datastore.upload_data(results)
+
+        print(faults)
+
+        if should_upload and faults:
+            datastore.upload_faults(faults)
 
         time.sleep(wait_time)
 

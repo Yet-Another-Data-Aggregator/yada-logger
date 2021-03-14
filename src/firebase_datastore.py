@@ -119,4 +119,7 @@ class FireDatastore(Datastore):
             "data": firestore.firestore.ArrayUnion([data])
         })
 
-
+    def upload_faults(self, faults):
+        self.db.collection("Loggers").document(logger_id).update({
+            "faults": firestore.firestore.ArrayUnion([faults])
+        })
