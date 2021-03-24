@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Input } from 'reactstrap';
 import { Wifi, Lock, LockOpen } from '@material-ui/icons';
+import { Link } from 'react-router-dom';
 
 export default function NetworkItem(props: any) {
     const [securityKey, setSecurityKey]: [string, any] = useState('');
+
     const onSecurityKeyChange = (event: any) => {
         console.log(event.target.value);
         setSecurityKey(event.target.value);
@@ -42,15 +44,17 @@ export default function NetworkItem(props: any) {
                 className="input"
                 onChange={onSecurityKeyChange}
             />
-            <Button
-                variant="outlined"
+            <Link
                 className="button"
-                onClick={() => {
-                    attemptConnection(props.network.ssid, securityKey);
-                }}
+                to={
+                    '/device-information/' +
+                    props.network.ssid +
+                    '/' +
+                    securityKey
+                }
             >
-                Connect
-            </Button>
+                Continue
+            </Link>
         </div>
     ) : null;
 
