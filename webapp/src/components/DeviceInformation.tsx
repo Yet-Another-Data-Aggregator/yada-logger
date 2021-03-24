@@ -90,8 +90,12 @@ export default function DeviceInformation() {
             const ssid = searchParams.get('ssid');
             const passkey = searchParams.get('passkey');
 
-            if (ssid != null && passkey != null) {
+            if (ssid != null && passkey != null && !isBlank(ssid)) {
                 attemptConnection(ssid, passkey);
+            } else {
+                alert(
+                    'SSID or network passkey not specified.  Return to network selection and try again.'
+                );
             }
         } else {
             alert('Device name cannot be empty.');
