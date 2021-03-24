@@ -1,13 +1,20 @@
 import os
 import sys
 import time
+import importlib
 
 import config
 import network
-from network import Network
 from channel_manager import ChannelManager
 from config import Config
 from file_utils import Files
+
+
+# Name of datastore to load
+datastore = None
+
+# If false nothing will be uploaded
+should_upload = False
 
 # Interval in seconds between checks to update channels
 template_update_interval = 60 * 5
@@ -26,8 +33,14 @@ def load_variables(section):
 
     :param section: The config section
     """
-    global template_update_interval
+    global template_update_interval, datastore, should_upload
     template_update_interval = float(section.get("template_refresh_interval", 60 * 5))
+
+    should_upload = section.get("should_upload", False)
+
+    datastore_module = importlib.import_module(f"{section['datastore_module']}")
+    datastore_class = getattr(datastore_module, section['datastore_class'])
+    datastore = datastore_class()
 
 
 def initialize():
@@ -36,12 +49,11 @@ def initialize():
     """
     load_variables()
 
-    Network.initialize()
     Files.initialize()
     ChannelManager.initialize()
 
-    if Network.should_update_template():
-        Network.fetch()
+    if datastore.should_update_template():
+        datastore.fetch()
 
     ChannelManager.load_from_config(Config.get())
 
@@ -51,10 +63,10 @@ def check_update():
     Checks whether the channels need updating. If not, this function returns without doing anything, if so, the new
     channels are fetched and the running and restart variables are set to reload the application.
     """
-    if not Network.should_update_template():
+    if not datastore.should_update_template():
         return
 
-    Network.fetch()
+    datastore.fetch()
 
     global running, restart
     running = False
@@ -70,7 +82,15 @@ def run():
 
     # Run all channels and then sleep until the next channel should run
     while running:
-        wait_time = ChannelManager.run_channels()
+        wait_time, results, faults = ChannelManager.run_channels()
+
+        if should_upload and results:
+            datastore.upload_data(results)
+
+        print(faults)
+
+        if should_upload and faults:
+            datastore.upload_faults(faults)
 
         time.sleep(wait_time)
 

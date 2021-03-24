@@ -5,9 +5,8 @@ import config
 import file_utils
 from file_utils import Files
 
-# The module path to import from
-from network import Network
 
+# The module path to import from
 channel_module_path = "channels."
 
 
@@ -129,7 +128,14 @@ class ChannelManager:
 
             add_to_multi_dict(channel_next_run_time, channel, next_run_times)
 
-        result_values["timestamp"] = datetime.now().strftime(file_utils.date_format)
+        # Set timestamps
+        now = datetime.now().strftime(file_utils.date_format)
+        if result_faults:
+            result_values["timestamp"] = now
+            result_faults = {
+                "timestamp": now,
+                "messages": result_faults
+            }
 
         file = Files.get_file(file_utils.logging_directory, "values")
         with file.open("a") as f:
@@ -138,10 +144,8 @@ class ChannelManager:
 
         ChannelManager.run_times = next_run_times
 
-        Network.upload_data(result_values)
-
         # Return time to wait until next run
-        return sorted(ChannelManager.run_times)[0]
+        return sorted(ChannelManager.run_times)[0], result_values, result_faults
 
 
 def add_to_multi_dict(key, value, dictionary):
