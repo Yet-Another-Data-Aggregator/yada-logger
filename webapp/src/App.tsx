@@ -33,7 +33,7 @@ function App() {
                                 </StaticNavItem>
                                 <StaticNavItem
                                     label={'Device Information'}
-                                    route={'/device-information'}
+                                    route={'/device-information/'}
                                     icon={<Info />}
                                 >
                                     <DeviceInformation />
