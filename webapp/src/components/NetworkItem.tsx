@@ -7,7 +7,6 @@ export default function NetworkItem(props: any) {
     const [securityKey, setSecurityKey]: [string, any] = useState('');
 
     const onSecurityKeyChange = (event: any) => {
-        console.log(event.target.value);
         setSecurityKey(event.target.value);
     };
 
