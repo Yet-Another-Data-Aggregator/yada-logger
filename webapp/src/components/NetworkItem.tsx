@@ -21,6 +21,7 @@ export default function NetworkItem(props: any) {
             <Input
                 variant="outlined"
                 className="input"
+                placeholder="Password"
                 onChange={onSecurityKeyChange}
             />
             <Link
