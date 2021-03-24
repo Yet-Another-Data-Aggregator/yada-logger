@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Button, Input } from 'reactstrap';
 import { Info, PermDeviceInformation } from '@material-ui/icons';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 export default function DeviceInformation() {
     const [deviceInfo, setDeviceInfo]: [any, any] = useState(null);
     const [deviceName, setDeviceName] = useState('');
     const [siteId, setSiteId] = useState('');
-    const { ssid, passkey }: any = useParams();
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
 
     const onDeviceNameChange = (event: any) => {
         setDeviceName(event.target.value);
@@ -16,26 +17,6 @@ export default function DeviceInformation() {
     const onSiteIdChange = (event: any) => {
         setSiteId(event.target.value);
     };
-
-    function attemptConnection(ssid: string, passkey: string) {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey }),
-        };
-
-        console.log('sending connection message with ' + ssid + ':' + passkey);
-
-        fetch('/enable_wifi', requestOptions)
-            .then(async (response) => {
-                var responseJson = await response.json();
-
-                console.log(responseJson);
-            })
-            .catch((reason) => {
-                console.log('Something went wrong: ' + reason);
-            });
-    }
 
     function getDeviceInfo() {
         if (!deviceInfo) {
@@ -83,6 +64,9 @@ export default function DeviceInformation() {
 
     //Get the device info once when the component is loaded.
     getDeviceInfo();
+
+    console.log(searchParams.get('ssid'));
+    console.log(searchParams.get('passkey'));
 
     return (
         <div className="deviceInformation">

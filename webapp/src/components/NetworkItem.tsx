@@ -11,26 +11,6 @@ export default function NetworkItem(props: any) {
         setSecurityKey(event.target.value);
     };
 
-    function attemptConnection(ssid: string, passkey: string) {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey }),
-        };
-
-        console.log('sending connection message with ' + ssid + ':' + passkey);
-
-        fetch('/enable_wifi', requestOptions)
-            .then(async (response) => {
-                var responseJson = await response.json();
-
-                console.log(responseJson);
-            })
-            .catch((reason) => {
-                console.log('Something went wrong: ' + reason);
-            });
-    }
-
     const encIcon = props.network.encrypted ? (
         <Lock className="rightIcon" />
     ) : (
@@ -46,12 +26,7 @@ export default function NetworkItem(props: any) {
             />
             <Link
                 className="button"
-                to={
-                    '/device-information/' +
-                    props.network.ssid +
-                    '/' +
-                    securityKey
-                }
+                to={`/device-information?ssid=${props.network.ssid}&passkey=${securityKey}`}
             >
                 Continue
             </Link>
