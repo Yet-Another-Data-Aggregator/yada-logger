@@ -18,6 +18,11 @@ export default function DeviceInformation() {
         setSiteId(event.target.value);
     };
 
+    //Helper function to check if string is null or whitespace
+    function isBlank(str: string) {
+        return !str || /^\s*$/.test(str);
+    }
+
     function getDeviceInfo() {
         if (!deviceInfo) {
             fetch('/devinfo')
@@ -56,10 +61,41 @@ export default function DeviceInformation() {
             });
     }
 
+    function attemptConnection(ssid: string, passkey: string) {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey }),
+        };
+
+        console.log('sending connection message with ' + ssid + ':' + passkey);
+
+        fetch('/enable_wifi', requestOptions)
+            .then(async (response) => {
+                var responseJson = await response.json();
+
+                console.log(responseJson);
+            })
+            .catch((reason) => {
+                console.log('Something went wrong: ' + reason);
+            });
+    }
+
     const handleSaveButton = () => {
-        console.log('Saving device name: ' + deviceName);
-        console.log('Saving site id: ' + siteId);
-        saveDeviceInfo(deviceName, siteId);
+        if (!isBlank(deviceName)) {
+            console.log('Saving device name: ' + deviceName);
+            console.log('Saving site id: ' + siteId);
+            saveDeviceInfo(deviceName, siteId);
+
+            const ssid = searchParams.get('ssid');
+            const passkey = searchParams.get('passkey');
+
+            if (ssid != null && passkey != null) {
+                attemptConnection(ssid, passkey);
+            }
+        } else {
+            alert('Device name cannot be empty.');
+        }
     };
 
     //Get the device info once when the component is loaded.
@@ -104,7 +140,7 @@ export default function DeviceInformation() {
                     variant="outlined"
                     onClick={handleSaveButton}
                 >
-                    Save
+                    Save &amp; Attempt Connect
                 </Button>
             </div>
         </div>
