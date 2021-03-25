@@ -72,7 +72,6 @@ app.get('/rescan_wifi', function (request, response) {
 
 //route handler for GET device info
 app.get('/devinfo', function (request, response) {
-    var devinfo = { ip: '<unknown>', mac: '<unknown>' };
     const wifiInfo = os.networkInterfaces()['wlan0'];
 
     console.log('Client GET /devinfo');
@@ -86,17 +85,19 @@ app.get('/devinfo', function (request, response) {
     }
 });
 
-//post route for device information, writes changes to src/config.ini
+//POST route for device information, writes changes to src/config.ini
 app.post('/devinfo', function (request, response) {
     var dev_info = {
         name: request.body.name,
         siteid: request.body.siteid,
+        notes: request.body.notes,
     };
 
     var config = ini.parse(fs.readFileSync(configPath, 'utf-8'));
 
     config.config.devname = dev_info.name;
     config.config.siteid = dev_info.siteid;
+    config.config.notes = dev_info.notes;
 
     fs.writeFileSync(configPath, ini.stringify(config));
 });

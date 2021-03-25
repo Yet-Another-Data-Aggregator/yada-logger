@@ -6,12 +6,17 @@ import { useLocation, useParams } from 'react-router-dom';
 export default function DeviceInformation() {
     const [deviceInfo, setDeviceInfo]: [any, any] = useState(null);
     const [deviceName, setDeviceName] = useState('');
+    const [notes, setNotes] = useState('');
     const [siteId, setSiteId] = useState('');
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
 
     const onDeviceNameChange = (event: any) => {
         setDeviceName(event.target.value);
+    };
+
+    const onNotesChange = (event: any) => {
+        setNotes(event.target.value);
     };
 
     const onSiteIdChange = (event: any) => {
@@ -43,7 +48,11 @@ export default function DeviceInformation() {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: devname, siteid: siteid }),
+            body: JSON.stringify({
+                name: devname,
+                siteid: siteid,
+                notes: notes,
+            }),
         };
 
         console.log(
@@ -137,6 +146,14 @@ export default function DeviceInformation() {
                     className="input"
                     onChange={onSiteIdChange}
                     value={siteId}
+                />
+
+                <div className="label">Notes:</div>
+                <Input
+                    type="textarea"
+                    className="largeInput"
+                    onChange={onNotesChange}
+                    value={notes}
                 />
 
                 <Button
