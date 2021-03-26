@@ -87,6 +87,8 @@ app.get('/devinfo', function (request, response) {
 
 //POST route for device information, writes changes to src/config.ini
 app.post('/devinfo', function (request, response) {
+    console.log('Client POST /devinfo');
+
     var dev_info = {
         name: request.body.name,
         siteid: request.body.siteid,
@@ -100,6 +102,8 @@ app.post('/devinfo', function (request, response) {
     config.config.notes = dev_info.notes;
 
     fs.writeFileSync(configPath, ini.stringify(config));
+
+    console.log('wrote changes to config.ini');
 });
 
 /************************************************/
