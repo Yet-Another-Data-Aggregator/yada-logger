@@ -110,7 +110,7 @@ app.post('/devinfo', function (request, response) {
 checkWifiEnabledFallbackToAP();
 
 // console.log that your server is up and running
-var server = app.listen(5000, function () {
+var server = app.listen(80, function () {
     var host = ip.address();
     var port = server.address().port;
     console.log('running at http://' + host + ':' + port);
@@ -146,7 +146,7 @@ app.post('/enable_wifi', function (request, response) {
             checkWifiEnabledFallbackToAP();
         }, 10000);
 
-        server = app.listen(5000, function () {
+        server = app.listen(80, function () {
             var host = ip.address();
             var port = server.address().port;
             console.log('restarted server at http://' + host + ':' + port);
