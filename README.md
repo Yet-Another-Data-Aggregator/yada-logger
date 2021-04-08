@@ -2,7 +2,7 @@ Connect to ```rpi-config-ap``` using password ```password```.
 
 Logger server on self-hosted access point is at http://192.168.88.1
 
-Server will be available around 30 seconds after the Pi is connected to power.
+Access point will be available around 60 seconds after the Pi is connected to power.
 
 ### Configure Startup Scripts
 * Run ```sudo crontab -e``` using nano.
