@@ -1,6 +1,7 @@
 import importlib
 from datetime import datetime
 
+import json
 import config
 import file_utils
 from file_utils import Files
@@ -118,7 +119,7 @@ class ChannelManager:
                 elif isinstance(value, list):
                     result_faults.append(value)
             except Exception as e:
-                result_faults.append(str(e))
+                result_faults.append(repr(e))
 
             # Get next time to run channel and add back into next_run_times
             try:
@@ -131,24 +132,37 @@ class ChannelManager:
         # Set timestamps
         now = datetime.now().strftime(file_utils.date_format)
         result_values["timestamp"] = now
+
         if result_faults:
             result_faults = {
                 "timestamp": now,
                 "messages": result_faults
             }
 
+            with Files.get_append_log_file(file_utils.logging_directory, "faults") as file:
+                file.write(json.dumps(result_faults))
+                file.write("\n")
+                Files.close(file)
+
+            with Files.get_append_log_file(file_utils.fault_upload_directory, "fault_upload") as file:
+                file.write(json.dumps(result_faults))
+                file.write("\n")
+                Files.close(file)
+
         with Files.get_append_log_file(file_utils.logging_directory, "values") as file:
-            file.write(f"""{str(result_values).replace("'", '"')}\n""")
+            file.write(json.dumps(result_values))
+            file.write("\n")
             Files.close(file)
 
-        with Files.get_append_upload_file(file_utils.upload_directory, "upload") as file:
-            file.write(f"""{str(result_values).replace("'", '"')}\n""")
+        with Files.get_append_upload_file(file_utils.value_upload_directory, "upload") as file:
+            file.write(json.dumps(result_values))
+            file.write("\n")
             Files.close(file)
 
         ChannelManager.run_times = next_run_times
 
         # Return time to wait until next run
-        return sorted(ChannelManager.run_times)[0], result_values, result_faults
+        return sorted(ChannelManager.run_times)[0]
 
 
 def add_to_multi_dict(key, value, dictionary):

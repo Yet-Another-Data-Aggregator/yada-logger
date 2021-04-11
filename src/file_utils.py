@@ -10,7 +10,10 @@ import config
 logging_directory = Path("logs/")
 
 # The path to the directory where upload files are saved
-upload_directory = Path("upload/")
+value_upload_directory = Path("upload/")
+
+# The path to the directory where upload files for faults are save
+fault_upload_directory = Path("fault_upload/")
 
 # The prefix of files that are pending upload
 upload_file_prefix = "upload_"
@@ -27,6 +30,7 @@ date_format = "%m-%d-%Y-%H:%M:%S"
 # A dictionary of open files for locking
 open_files = set()
 
+# For locking critical file operations
 lock = threading.Lock()
 
 
@@ -37,8 +41,12 @@ def load_variables(section):
 
     :param section: The config section
     """
-    global logging_directory, upload_file_prefix, log_file_prefix, date_format, max_file_size
+    global logging_directory, upload_file_prefix, log_file_prefix, date_format, max_file_size, fault_upload_directory
+    global value_upload_directory
+
     logging_directory = Path(section.get("logging_directory", "logs/"))
+    value_upload_directory = Path(section.get("value_upload_directory", "upload/"))
+    fault_upload_directory = Path(section.get("fault_upload_directory", "fault_upload/"))
     upload_file_prefix = section.get("upload_file_prefix", "upload_")
     log_file_prefix = section.get("log_file_prefix", "log_")
     max_file_size = int(section.get("max_file_size", 100 * 1024))
