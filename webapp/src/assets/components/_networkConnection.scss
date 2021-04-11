@@ -1,6 +1,7 @@
 .networkConnection {
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
 
     h1 {
         @include mediumSmallTitle;
@@ -9,7 +10,6 @@
     }
 
     .networkList {
-        overflow: scroll;
     }
 
     .button {
