@@ -128,11 +128,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-<<<<<<< HEAD
 .idea/
 
 secret/
-=======
+upload/
+
 .idea/# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -157,4 +157,3 @@ secret/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
->>>>>>> 86f0cc6d07146ac2c24773825dd3c478b90f90af
