@@ -130,4 +130,4 @@ if __name__ == '__main__':
 
     # Restart the process if True
     if restart:
-        os.execv(sys.executable, ['python'] + sys.argv)
+        os.execv(sys.executable, ['python3'] + sys.argv)
