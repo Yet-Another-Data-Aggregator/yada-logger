@@ -2,12 +2,15 @@ import os
 import sys
 import time
 import importlib
+import threading
+import json
 
 import config
 import network
 from channel_manager import ChannelManager
 from config import Config
 from file_utils import Files
+import file_utils
 
 
 # Name of datastore to load
@@ -73,36 +76,57 @@ def check_update():
     restart = True
 
 
-def run():
+def scan_run():
     """
     Main loop of the application. Runs all channels, sleeps until next channel run time, and checks for channel
     updates if the interval is up.
     """
-    now = time.time()
 
     # Run all channels and then sleep until the next channel should run
     while running:
-        wait_time, results, faults = ChannelManager.run_channels()
-
-        if should_upload and results:
-            datastore.upload_data(results)
-
-        print(faults)
-
-        if should_upload and faults:
-            datastore.upload_faults(faults)
+        wait_time = ChannelManager.run_channels()
 
         time.sleep(wait_time)
+
+
+def network_run():
+    now = time.time()
+
+    while running:
+        time.sleep(5)
 
         if time.time() - now > template_update_interval:
             now = time.time()
             check_update()
 
+        if should_upload != True:
+            continue
+
+        if not Files.is_directory_empty(file_utils.value_upload_directory):
+            with Files.get_most_recent_file_blocking(file_utils.value_upload_directory) as upload_file:
+                datastore.upload_data(list(map(json.loads, upload_file.readlines())))
+                Files.delete(upload_file)
+
+        if not Files.is_directory_empty(file_utils.fault_upload_directory):
+            with Files.get_most_recent_file_blocking(file_utils.fault_upload_directory) as fault_upload_file:
+                datastore.upload_faults(list(map(json.loads, fault_upload_file.readlines())))
+                Files.delete(fault_upload_file)
+
 
 if __name__ == '__main__':
     initialize()
 
-    run()
+    scanThread = threading.Thread(target=scan_run)
+    networkThread = threading.Thread(target=network_run)
+
+    scanThread.start()
+    networkThread.start()
+
+    while running:
+        time.sleep(15 * 60)
+
+    scanThread.stop()
+    networkThread.stop()
 
     # Restart the process if True
     if restart:
