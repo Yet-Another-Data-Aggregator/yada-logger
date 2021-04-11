@@ -3,6 +3,7 @@ import firebase_admin
 import os
 import os.path
 import re
+import time
 from config import Config
 from datetime import datetime
 from firebase_admin import credentials, firestore, storage
@@ -32,6 +33,8 @@ channel_module_path = "channels/"
 # The name of the file with database authentication credentials
 credential_file = ""
 
+notes = ""
+
 
 @config.section("config")
 def load_variables(section):
@@ -41,14 +44,15 @@ def load_variables(section):
     :param section: The configuration section
     """
     global logger_id, template_id, server_address, template_modified_date, template_modified_date_format
-    global channel_module_path, credential_file
+    global channel_module_path, credential_file, notes
 
-    logger_id = Config.required(section, "logger_id", "Logger ID is required")
-    template_id = Config.required(section, "template_id", "Template ID is required")
+    logger_id = section.get("logger_id", None)
+    template_id = section.get("template_id", None)
     server_address = Config.required(section, "server_address", "Server address is required")
     template_modified_date_format = section.get("template_modified_date_format", "%Y-%m-%d %H:%M:%S.%f")
     channel_module_path = section.get("channel_module_path", "channels/")
     credential_file = Config.required(section, "credentials", "Credential file is required")
+    notes = section.get("notes", "")
 
     if "template_modified_date" in section:
         template_modified_date = datetime.strptime(section["template_modified_date"], template_modified_date_format)
@@ -63,11 +67,43 @@ class FireDatastore(Datastore):
 
         self.db = firestore.client()
 
-        self.template_snapshot = self.db.collection("ChannelTemplates").document(template_id).get()
-        self.logger_snapshot = self.db.collection("Loggers").document(logger_id).get()
+        if logger_id is not None and logger_id != "":
+            self.logger_snapshot = self.db.collection("Loggers").document(logger_id).get()
+        else:
+            self.create_logger()
+
+        if template_id is not None and template_id != "":
+            self.template_snapshot = self.db.collection("ChannelTemplates").document(template_id).get()
+        else:
+            self.template_snapshot = None
+
+    def create_logger(self):
+        reference = self.db.collection("Loggers").add({
+            "channelTemplate": "",
+            "data": [],
+            "collectingData": True,
+            "equipment": "",
+            "faults": [],
+            "name": "",
+            "site": "",
+            "ip": "",
+            "mac": "",
+            "notes": notes,
+        })
+
+        self.logger_snapshot = reference[1].get()
+
+        global logger_id
+        logger_id = reference[1].id
+
+        Config.get()["config"]["logger_id"] = logger_id
+        Config.write_changes()
 
     def should_update_template(self):
-        return self.channel_template_invalid() or self.channel_template_outdated()
+        return self.template_snapshot is None or \
+               template_id == "" or \
+               self.channel_template_invalid() or \
+               self.channel_template_outdated()
 
     def channel_template_invalid(self):
         return self.logger_snapshot.to_dict()["channelTemplate"] != template_id
@@ -77,16 +113,31 @@ class FireDatastore(Datastore):
         return template_modified_date < datetime.strptime(date_string, template_modified_date_format)
 
     def fetch(self):
-        if self.channel_template_invalid():
+        # Update notes if they have changed
+        if Config.get()["config"]["notes"] != notes:
+            self.update_notes()
+
+        while self.should_update_template():
             self.fetch_template()
+
+            if self.should_update_template():
+                time.sleep(5)
 
         self.fetch_channels()
 
         Config.write_changes()
 
+    def update_notes(self):
+        self.db.collection("Loggers").document(logger_id).update({
+            "notes": Config.get["config"]["notes"]
+        })
+
     def fetch_template(self):
         global template_id
         template_id = self.logger_snapshot.to_dict()["channelTemplate"]
+
+        if template_id == "" or template_id is None:
+            return
 
         self.template_snapshot = self.db.collection("ChannelTemplates").document(template_id).get()
 
