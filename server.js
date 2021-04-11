@@ -132,11 +132,11 @@ app.post('/enable_wifi', function (request, response) {
             wifi_manager.enable_ap_mode(ap_ssid, function (error) {
                 console.log('... AP mode reset');
             });
+        } else {
+            //close the server once connected to wifi
+            server.close();
         }
 
-        //close the server once connected to wifi
-        server.close()
-        
         //NOTE: Uncomment this for server re-up functionality after wifi connection
         //restart the web server to give the pi a chance to connect to wifi
         /*console.log('Wifi Enabled! - Restarting server');
