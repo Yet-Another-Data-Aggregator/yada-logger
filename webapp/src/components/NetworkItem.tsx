@@ -18,12 +18,14 @@ export default function NetworkItem(props: any) {
 
     const connectionPrompt = props.selected ? (
         <div className="inline">
-            <Input
-                variant="outlined"
-                className="input"
-                placeholder="Password"
-                onChange={onSecurityKeyChange}
-            />
+            {props.network.encrypted ? (
+                <Input
+                    variant="outlined"
+                    className="input"
+                    placeholder="Password"
+                    onChange={onSecurityKeyChange}
+                />
+            ) : null}
             <Link
                 className="button"
                 to={`/device-information?ssid=${props.network.ssid}&passkey=${securityKey}`}
