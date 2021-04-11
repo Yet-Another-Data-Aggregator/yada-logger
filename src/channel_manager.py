@@ -130,17 +130,20 @@ class ChannelManager:
 
         # Set timestamps
         now = datetime.now().strftime(file_utils.date_format)
+        result_values["timestamp"] = now
         if result_faults:
-            result_values["timestamp"] = now
             result_faults = {
                 "timestamp": now,
                 "messages": result_faults
             }
 
-        file = Files.get_file(file_utils.logging_directory, "values")
-        with file.open("a") as f:
-            f.write(f"{str(result_values)}\n")
-            f.close()
+        with Files.get_append_log_file(file_utils.logging_directory, "values") as file:
+            file.write(f"""{str(result_values).replace("'", '"')}\n""")
+            Files.close(file)
+
+        with Files.get_append_upload_file(file_utils.upload_directory, "upload") as file:
+            file.write(f"""{str(result_values).replace("'", '"')}\n""")
+            Files.close(file)
 
         ChannelManager.run_times = next_run_times
 

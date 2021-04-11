@@ -115,8 +115,10 @@ class FireDatastore(Datastore):
         config["config"]["template_modified_date"] = template["modified"]
 
     def upload_data(self, data):
+        print("Trying to upload data")
+
         self.db.collection("Loggers").document(logger_id).update({
-            "data": firestore.firestore.ArrayUnion([data])
+            "data": firestore.firestore.ArrayUnion(data)
         })
 
     def upload_faults(self, faults):
