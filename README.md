@@ -1,52 +1,47 @@
-# Resources
+Connect to ```rpi-config-ap``` using password ```password```.
 
-## How to set up a NodeJS server to serve the react app.
+Logger server on self-hosted access point is at http://192.168.88.1
 
-https://medium.com/@maison.moa/setting-up-an-express-backend-server-for-create-react-app-bc7620b20a61
+Access point will be available around 60 seconds after the Pi is connected to power.
 
-# Getting Started with Create React App
+## Creating a system image.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Get Base Image
+* Go to https://www.raspberrypi.org/software/operating-systems/ and download the latest Rasperry Pi OS Lite image.
+* Flash the image to a microSD card.
+* Don't remove the microSD card!
 
-## Available Scripts
+### Configure Pi USB Ethernet Gadget
+* With the microSD card still in the machine we flashed from.
+* Navigate to the root level of the microSD card.
+* Edit ```config.txt``` and add ```dtoverlay=dwc2``` as the last line.
+* Edit ```cmdline.txt``` after the word **rootwait** add a space and then ```modules-load=dwc2,g_ether```
+* Create a new empty file named ```ssh``` with no extention.
+* Now when the Pi is connected to a machine via USB we can SSH into it at ```raspberrypi.local```
+* **NOTE** Windows users may need to add Bonjour support so it knows what to do with .local names.  The easiest way to do this is to install iTunes.  More information here https://learn.adafruit.com/bonjour-zeroconf-networking-for-windows-and-linux/.
 
-In the project directory, you can run:
+### Give the Pi Internet Access
+* Connect the Pi to the host machine.
+* In the system settings of the host machine, bridge a network adapter with internet access and the usb ethernet adapter that is presented from the Pi.
+* Now SSH into the Pi and test the network connectivity by trying ```ping 8.8.8.8``` (Google's DNS).
+* **NOTE** default SSH credentials are user:```pi``` and password:```raspberry``` 
 
-### `npm start`
+### Install Dependencies
+* Update package list with ```sudo apt-get update```.
+* Install **hostapd** with ```sudo apt-get install hostapd```.
+* Install **dhcpcd** with ```sudo apt-get install dhcpcd```.
+* Install **git** with ```sudo apt-get install git```.
+* Enable the NodeSource repository by running ```curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -```.
+* Update package list with ```sudo apt-get update```.
+* Install Node.js and npm with ```sudo apt-get install nodejs```.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Clone Repository
+* SSH into the Pi and navigate into ```/home/pi``` if you're not there already.
+* Clone the yada-logger repository with ```git clone https://github.com/Yet-Another-Data-Aggregator/yada-logger.git```.
+* CD into the ```yada-logger``` folder.
+* Get the needed packages with ```npm install```.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Configure Startup Scripts
+* Run ```sudo crontab -e``` using nano.
+* Add the line ```@reboot cd /home/pi/yada-logger && sudo /usr/local/bin/node server.js &```
+* Add the line ```@reboot cd /home/pi/yada-logger/src && sudo /usr/bin/python3 server.js &```

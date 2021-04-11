@@ -1,0 +1,59 @@
+.hiddenNetworkItem {
+    @include floatingCard;
+
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    color: $companyName;
+    border-radius: 8px;
+
+    .inline {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        padding-top: 0.25rem;
+        padding-bottom: 0.5rem;
+
+        .leftIcon {
+            margin-left: 1rem;
+        }
+
+        .rightIcon {
+            margin-right: 1rem;
+        }
+    }
+
+    .button {
+        @include filledPrimaryButton;
+        text-align: center;
+        height: 2rem;
+        margin-top: 0;
+        margin-right: auto;
+        margin-left: auto;
+        width: 25%;
+    }
+
+    .expandButton {
+        @include filledPrimaryButton;
+        text-align: center;
+        height: 2rem;
+        margin-right: auto;
+        margin-left: auto;
+        width: 67%;
+    }
+
+    .input {
+        border-width: 2px;
+        border-color: $lightGray;
+        border-radius: 10px;
+        padding-left: 1rem;
+        margin-left: 1rem;
+        margin-right: 2rem;
+        width: 70%;
+        height: 2rem;
+        font-family: 'Lato', sans-serif;
+        font-weight: 400;
+        color: $darkGray;
+    }
+}

@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap");
-
 // COLORS
 $turqois: #2292a4;
 $darkGray: #4b4b4b;
@@ -12,23 +10,23 @@ $companyName: $turqois;
 $darkNavbar: #393e41;
 
 .center {
-  margin: 0 auto;
-  position: relative;
+    margin: 0 auto;
+    position: relative;
 }
 
 .w-full {
-  width: 100%;
+    width: 100%;
 }
 
 .w-80 {
-  width: 80%;
+    width: 80%;
 }
 
 @mixin scrollWithoutScrollbar {
-  overflow-y: scroll;
-  &::-webkit-scrollbar {
-    width: 0 !important;
-  }
-  overflow: -moz-scrollbars-none;
-  ms-overflow-style: none;
+    overflow-y: scroll;
+    &::-webkit-scrollbar {
+        width: 0 !important;
+    }
+    overflow: -moz-scrollbars-none;
+    ms-overflow-style: none;
 }

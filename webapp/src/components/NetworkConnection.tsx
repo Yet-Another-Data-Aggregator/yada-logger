@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from 'reactstrap';
+import HiddenNetworkItem from './HiddenNetworkItem';
 import NetworkItem from './NetworkItem';
 
 export default function NetworkConnection() {
@@ -51,6 +52,8 @@ export default function NetworkConnection() {
             ) : (
                 <div className="noNetworks">[No Networks Found]</div>
             )}
+
+            <HiddenNetworkItem />
 
             <Button className="button" onClick={refreshNetworks}>
                 Refresh

@@ -72,7 +72,6 @@ app.get('/rescan_wifi', function (request, response) {
 
 //route handler for GET device info
 app.get('/devinfo', function (request, response) {
-    var devinfo = { ip: '<unknown>', mac: '<unknown>' };
     const wifiInfo = os.networkInterfaces()['wlan0'];
 
     console.log('Client GET /devinfo');
@@ -86,26 +85,32 @@ app.get('/devinfo', function (request, response) {
     }
 });
 
-//post route for device information, writes changes to src/config.ini
+//POST route for device information, writes changes to src/config.ini
 app.post('/devinfo', function (request, response) {
+    console.log('Client POST /devinfo');
+
     var dev_info = {
         name: request.body.name,
         siteid: request.body.siteid,
+        notes: request.body.notes,
     };
 
     var config = ini.parse(fs.readFileSync(configPath, 'utf-8'));
 
     config.config.devname = dev_info.name;
     config.config.siteid = dev_info.siteid;
+    config.config.notes = dev_info.notes;
 
     fs.writeFileSync(configPath, ini.stringify(config));
+
+    console.log('wrote changes to config.ini');
 });
 
 /************************************************/
 checkWifiEnabledFallbackToAP();
 
 // console.log that your server is up and running
-var server = app.listen(5000, function () {
+var server = app.listen(80, function () {
     var host = ip.address();
     var port = server.address().port;
     console.log('running at http://' + host + ':' + port);
@@ -129,8 +134,12 @@ app.post('/enable_wifi', function (request, response) {
             });
         }
 
+        //close the server once connected to wifi
+        server.close()
+        
+        //NOTE: Uncomment this for server re-up functionality after wifi connection
         //restart the web server to give the pi a chance to connect to wifi
-        console.log('Wifi Enabled! - Restarting server');
+        /*console.log('Wifi Enabled! - Restarting server');
         server.close();
 
         //This causes the wifi to not connect for some reason
@@ -141,10 +150,11 @@ app.post('/enable_wifi', function (request, response) {
             checkWifiEnabledFallbackToAP();
         }, 10000);
 
-        server = app.listen(5000, function () {
+        server = app.listen(80, function () {
             var host = ip.address();
             var port = server.address().port;
             console.log('restarted server at http://' + host + ':' + port);
         });
+        */
     });
 });

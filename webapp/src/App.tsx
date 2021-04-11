@@ -6,6 +6,7 @@ import NetworkConnection from './components/NetworkConnection';
 import DeviceInformation from './components/DeviceInformation';
 import StaticNavbar, { StaticNavItem } from './components/StaticNavbar';
 import { Info, Wifi } from '@material-ui/icons';
+import 'typeface-lato';
 
 function App() {
     return (
@@ -33,7 +34,7 @@ function App() {
                                 </StaticNavItem>
                                 <StaticNavItem
                                     label={'Device Information'}
-                                    route={'/device-information'}
+                                    route={'/device-information/'}
                                     icon={<Info />}
                                 >
                                     <DeviceInformation />
