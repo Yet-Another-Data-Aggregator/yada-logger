@@ -46,7 +46,7 @@ Access point will be available around 60 seconds after the Pi is connected to po
 * Navigate to ```/home/pi/yada-logger/src'''
 * Install firebase_admin with ```sudo pip3 install firebase_admin```
 * Uninstall grpc library with ```sudo pip3 uninstall grpcio```
-* Fix grpc library by rebuilding with ```sudo pip3 install --upgrade --no-binary :all: grpcio```
+* Fix grpc library by rebuilding with ```sudo pip3 install --upgrade --no-binary :all: grpcio```.  This command builds grpcio from source and may take a long time to build on a pi zero.
 
 ### Configure Startup Scripts
 * Run ```sudo crontab -e``` using nano.
