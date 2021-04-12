@@ -45,6 +45,7 @@ Access point will be available around 60 seconds after the Pi is connected to po
 * Install pip3 with ```sudo apt-get install python3-pip```
 * Navigate to ```/home/pi/yada-logger/src'''
 * Install firebase_admin with ```python3 -m pip install firebase_admin```
+* Fix grpc library by rebuilding with ```python -m pip install --upgrade --no-binary :all: grpcio```
 
 ### Configure Startup Scripts
 * Run ```sudo crontab -e``` using nano.
