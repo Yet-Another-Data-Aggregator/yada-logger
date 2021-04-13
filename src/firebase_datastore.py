@@ -176,3 +176,8 @@ class FireDatastore(Datastore):
         self.db.collection("Loggers").document(logger_id).update({
             "faults": firestore.firestore.ArrayUnion(faults)
         })
+
+        self.db.collection("Notifications").add({
+            "logger": logger_id,
+            "message": f"The following faults occurred for logger {logger_id}:\n {str(faults)}"
+        })
