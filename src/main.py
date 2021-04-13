@@ -41,9 +41,17 @@ def load_variables(section):
 
     should_upload = section.get("should_upload", False)
 
+    # Callback for when should update changes
+    def on_should_update_change(new_value):
+        global should_upload
+        should_upload = new_value
+
+        Config.get()["config"]["should_upload"] = str(new_value)
+        Config.write_changes()
+
     datastore_module = importlib.import_module(f"{section['datastore_module']}")
     datastore_class = getattr(datastore_module, section['datastore_class'])
-    datastore = datastore_class()
+    datastore = datastore_class(on_should_update_change)
 
 
 def initialize():
@@ -84,9 +92,11 @@ def scan_run():
 
     # Run all channels and then sleep until the next channel should run
     while running:
-        wait_time = ChannelManager.run_channels()
-
-        time.sleep(wait_time)
+        if should_upload:
+            wait_time = ChannelManager.run_channels()
+            time.sleep(wait_time)
+        else:
+            time.sleep(5000)
 
 
 def network_run():

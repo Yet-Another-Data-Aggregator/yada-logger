@@ -59,7 +59,7 @@ def load_variables(section):
 
 
 class FireDatastore(Datastore):
-    def __init__(self):
+    def __init__(self, should_update_callback):
         load_variables()
 
         self.cred = credentials.Certificate(f"secret/{credential_file}")
@@ -71,6 +71,11 @@ class FireDatastore(Datastore):
             self.logger_snapshot = self.db.collection("Loggers").document(logger_id).get()
         else:
             self.create_logger()
+
+        def set_should_update(doc_snapshot, changes, real_time):
+            should_update_callback(doc_snapshot[0].to_dict()["collectingData"])
+
+        self.db.collection("Loggers").document(logger_id).on_snapshot(set_should_update)
 
         if template_id is not None and template_id != "":
             self.template_snapshot = self.db.collection("ChannelTemplates").document(template_id).get()
@@ -100,10 +105,7 @@ class FireDatastore(Datastore):
         Config.write_changes()
 
     def should_update_template(self):
-        return self.template_snapshot is None or \
-               template_id == "" or \
-               self.channel_template_invalid() or \
-               self.channel_template_outdated()
+        return self.channel_template_invalid() or  self.channel_template_outdated()
 
     def channel_template_invalid(self):
         return self.logger_snapshot.to_dict()["channelTemplate"] != template_id
@@ -117,10 +119,10 @@ class FireDatastore(Datastore):
         if Config.get()["config"]["notes"] != notes:
             self.update_notes()
 
-        while self.should_update_template():
+        while self.template_snapshot is None or template_id == "":
             self.fetch_template()
 
-            if self.should_update_template():
+            if self.template_snapshot is None or template_id == "":
                 time.sleep(5)
 
         self.fetch_channels()
@@ -156,11 +158,11 @@ class FireDatastore(Datastore):
 
         template = self.template_snapshot.to_dict()
         for channel_name, filename in template["channels"].items():
-            blob = bucket.blob(f"{PREFIX}{filename}")
+            blob = bucket.blob(f"{PREFIX}{filename['script']}")
             blob.download_to_filename(f"{channel_module_path}{channel_name}.py")
 
             config[f"channel/{channel_name}"] = {
-                "module": filename.replace(".py", "")
+                "module": filename['script'].replace(".py", "")
             }
 
         config["config"]["template_modified_date"] = template["modified"]
@@ -173,4 +175,9 @@ class FireDatastore(Datastore):
     def upload_faults(self, faults):
         self.db.collection("Loggers").document(logger_id).update({
             "faults": firestore.firestore.ArrayUnion(faults)
+        })
+
+        self.db.collection("Notifications").add({
+            "logger": logger_id,
+            "message": f"The following faults occurred for logger {logger_id}:\n {str(faults)}"
         })
