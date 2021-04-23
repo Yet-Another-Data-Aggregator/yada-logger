@@ -8,7 +8,7 @@ export default function HiddenNetworkItem() {
     const [ssid, setSSID]: [string, any] = useState('');
     const history = useHistory();
 
-    const [expanded, setExpanded]: [boolean, any] = useState(true);
+    const [expanded, setExpanded]: [boolean, any] = useState(false);
 
     //Helper function to check if string is null or whitespace
     function isBlank(str: string) {
@@ -27,8 +27,7 @@ export default function HiddenNetworkItem() {
         <Button
             className="expandButton"
             onClick={() => {
-                //Disabled expand/hide functionality to meet acceptance test.
-                //setExpanded(!expanded);
+                setExpanded(!expanded);
             }}
         >
             Hidden SSID
