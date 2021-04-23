@@ -141,14 +141,14 @@ export default function DeviceInformation() {
                     value={deviceName}
                 />
 
-                <div className="label">Site ID:</div>
+                <div className="label">Site ID (Optional):</div>
                 <Input
                     className="input"
                     onChange={onSiteIdChange}
                     value={siteId}
                 />
 
-                <div className="label">Notes:</div>
+                <div className="label">Notes (Optional):</div>
                 <Input
                     type="textarea"
                     className="largeInput"
