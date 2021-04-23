@@ -1,5 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Redirect,
+} from 'react-router-dom';
 import { Animated } from 'react-animated-css';
 import './App.scss';
 import NetworkConnection from './components/NetworkConnection';
@@ -15,6 +20,7 @@ function App() {
             renders the first one that matches the current URL. */}
             <Switch>
                 <Route path="/">
+                    <Redirect to="/network-connection/" />
                     <Animated
                         animationIn="fadeIn"
                         animationOut="fadeOut"
