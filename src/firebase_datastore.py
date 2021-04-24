@@ -32,6 +32,9 @@ channel_module_directory = "channels/"
 credential_file = ""
 
 notes = ""
+devname = ""
+ip = ""
+mac = ""
 
 
 @config.section("config")
@@ -42,7 +45,7 @@ def load_variables(section):
     :param section: The configuration section
     """
     global logger_id, template_id, template_modified_date, template_modified_date_format
-    global channel_module_directory, credential_file, notes
+    global channel_module_directory, credential_file, notes, ip, mac, devname
 
     logger_id = section.get("logger_id", None)
     template_id = section.get("template_id", None)
@@ -50,6 +53,9 @@ def load_variables(section):
     channel_module_directory = section.get("channel_module_directory", "channels/")
     credential_file = Config.required(section, "credentials", "Credential file is required")
     notes = section.get("notes", "")
+    ip = section.get("ip", "")
+    mac = section.get("mac", "")
+    devname = section.get("devname", "")
 
     if "template_modified_date" in section and section["template_modified_date"] != "":
         template_modified_date = datetime.strptime(section["template_modified_date"], template_modified_date_format)
@@ -86,10 +92,10 @@ class FireDatastore(Datastore):
             "collectingData": True,
             "equipment": "",
             "faults": [],
-            "name": "",
+            "name": devname,
             "site": "",
-            "ip": "",
-            "mac": "",
+            "ip": ip,
+            "mac": mac,
             "notes": notes,
         })
 
@@ -115,9 +121,15 @@ class FireDatastore(Datastore):
         return template_modified_date < datetime.strptime(date_string, template_modified_date_format)
 
     def fetch(self):
-        # Update notes if they have changed
+        # Update other parameters if they have changed
         if Config.get()["config"]["notes"] != notes:
             self.update_notes()
+        if Config.get()["config"]["mac"] != mac:
+            self.update_mac()
+        if Config.get()["config"]["ip"] != ip:
+            self.update_ip()
+        if Config.get()["config"]["devname"] != devname:
+            self.update_devname()
 
         while self.template_snapshot is None or template_id == "":
             self.fetch_template()
@@ -132,6 +144,21 @@ class FireDatastore(Datastore):
     def update_notes(self):
         self.db.collection("Loggers").document(logger_id).update({
             "notes": Config.get["config"]["notes"]
+        })
+
+    def update_mac(self):
+        self.db.collection("Loggers").document(logger_id).update({
+            "mac": Config.get["config"]["mac"]
+        })
+
+    def update_ip(self):
+        self.db.collection("Loggers").document(logger_id).update({
+            "ip": Config.get["config"]["ip"]
+        })
+
+    def update_devname(self):
+        self.db.collection("Loggers").document(logger_id).update({
+            "devname": Config.get["config"]["devname"]
         })
 
     def fetch_template(self):
