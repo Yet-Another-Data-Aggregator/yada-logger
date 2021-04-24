@@ -4,6 +4,7 @@ import os
 import os.path
 import re
 import time
+from pathlib import Path
 from config import Config
 from datetime import datetime
 from firebase_admin import credentials, firestore, storage
@@ -28,7 +29,7 @@ template_modified_date = datetime.fromtimestamp(0)
 template_modified_date_format = ""
 
 # Path to store downloaded channels in
-channel_module_path = "channels/"
+channel_module_directory = "channels/"
 
 # The name of the file with database authentication credentials
 credential_file = ""
@@ -44,17 +45,17 @@ def load_variables(section):
     :param section: The configuration section
     """
     global logger_id, template_id, server_address, template_modified_date, template_modified_date_format
-    global channel_module_path, credential_file, notes
+    global channel_module_directory, credential_file, notes
 
     logger_id = section.get("logger_id", None)
     template_id = section.get("template_id", None)
     server_address = Config.required(section, "server_address", "Server address is required")
     template_modified_date_format = section.get("template_modified_date_format", "%Y-%m-%d %H:%M:%S.%f")
-    channel_module_path = section.get("channel_module_path", "channels/")
+    channel_module_directory = section.get("channel_module_directory", "channels/")
     credential_file = Config.required(section, "credentials", "Credential file is required")
     notes = section.get("notes", "")
 
-    if "template_modified_date" in section:
+    if "template_modified_date" in section and section["template_modified_date"] != "":
         template_modified_date = datetime.strptime(section["template_modified_date"], template_modified_date_format)
 
 
@@ -105,7 +106,7 @@ class FireDatastore(Datastore):
         Config.write_changes()
 
     def should_update_template(self):
-        return self.channel_template_invalid() or  self.channel_template_outdated()
+        return self.channel_template_invalid() or self.channel_template_outdated()
 
     def channel_template_invalid(self):
         return self.logger_snapshot.to_dict()["channelTemplate"] != template_id
@@ -149,17 +150,21 @@ class FireDatastore(Datastore):
         config = Config.get()
         bucket = storage.bucket("yada-comp451.appspot.com")
 
+        channel_path = Path(channel_module_directory)
+        if not channel_path.exists():
+            channel_path.mkdir()
+
         for key in filter(lambda section: section.startswith("channel/"), config.sections()):
             config.remove_section(key)
 
-        for root, dirs, files in os.walk(channel_module_path):
+        for root, dirs, files in os.walk(channel_module_directory):
             for file in files:
                 os.remove(os.path.join(root, file))
 
         template = self.template_snapshot.to_dict()
         for channel_name, filename in template["channels"].items():
             blob = bucket.blob(f"{PREFIX}{filename['script']}")
-            blob.download_to_filename(f"{channel_module_path}{channel_name}.py")
+            blob.download_to_filename(f"{channel_module_directory}{channel_name}.py")
 
             config[f"channel/{channel_name}"] = {
                 "module": filename['script'].replace(".py", "")
