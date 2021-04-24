@@ -1,5 +1,6 @@
 import configparser
 import sys
+from pathlib import Path
 
 # Location of the configuration file
 CONFIG_FILE = "config.ini"
@@ -12,6 +13,10 @@ def parse_config_file(filename):
     :param filename: The filename of the configuration file
     :return: The configuration object created from the file
     """
+    path = Path(filename)
+    if not path.exists():
+        path.touch()
+
     config = configparser.ConfigParser()
     config.read(filename)
 
