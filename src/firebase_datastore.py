@@ -19,9 +19,6 @@ logger_id = ""
 # ID of the template this logger is using
 template_id = ""
 
-# Address of the database server
-server_address = ""
-
 # Latest modified date of the template. Used to know when to update the channel template.
 template_modified_date = datetime.fromtimestamp(0)
 
@@ -44,12 +41,11 @@ def load_variables(section):
 
     :param section: The configuration section
     """
-    global logger_id, template_id, server_address, template_modified_date, template_modified_date_format
+    global logger_id, template_id, template_modified_date, template_modified_date_format
     global channel_module_directory, credential_file, notes
 
     logger_id = section.get("logger_id", None)
     template_id = section.get("template_id", None)
-    server_address = Config.required(section, "server_address", "Server address is required")
     template_modified_date_format = section.get("template_modified_date_format", "%Y-%m-%d %H:%M:%S.%f")
     channel_module_directory = section.get("channel_module_directory", "channels/")
     credential_file = Config.required(section, "credentials", "Credential file is required")
@@ -63,7 +59,7 @@ class FireDatastore(Datastore):
     def __init__(self, should_update_callback):
         load_variables()
 
-        self.cred = credentials.Certificate(f"secret/{credential_file}")
+        self.cred = credentials.Certificate(credential_file)
         firebase_admin.initialize_app(self.cred)
 
         self.db = firestore.client()
@@ -106,7 +102,10 @@ class FireDatastore(Datastore):
         Config.write_changes()
 
     def should_update_template(self):
-        return self.channel_template_invalid() or self.channel_template_outdated()
+        return self.template_snapshot is None or \
+               template_id == "" or \
+               self.channel_template_invalid() or \
+               self.channel_template_outdated()
 
     def channel_template_invalid(self):
         return self.logger_snapshot.to_dict()["channelTemplate"] != template_id
