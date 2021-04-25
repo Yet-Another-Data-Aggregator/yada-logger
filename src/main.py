@@ -96,7 +96,7 @@ def scan_run():
             wait_time = ChannelManager.run_channels()
             time.sleep(wait_time)
         else:
-            time.sleep(5000)
+            time.sleep(5)
 
 
 def network_run():
