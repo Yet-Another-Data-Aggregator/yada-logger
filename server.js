@@ -93,6 +93,8 @@ app.post('/devinfo', function (request, response) {
         name: request.body.name,
         siteid: request.body.siteid,
         notes: request.body.notes,
+        ip: request.body.ip,
+        mac: request.body.mac
     };
 
     var config = ini.parse(fs.readFileSync(configPath, 'utf-8'));
@@ -100,6 +102,8 @@ app.post('/devinfo', function (request, response) {
     config.config.devname = dev_info.name;
     config.config.siteid = dev_info.siteid;
     config.config.notes = dev_info.notes;
+    config.config.ip = dev_info.ip;
+    config.config.mac = dev_info.mac;
 
     fs.writeFileSync(configPath, ini.stringify(config));
 

@@ -70,11 +70,11 @@ export default function DeviceInformation() {
             });
     }
 
-    function attemptConnection(ssid: string, passkey: string) {
+    function attemptConnection(ssid: string, passkey: string, deviceInfo: any) {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey }),
+            body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey, ip: deviceInfo?.address, mac: deviceInfo?.mac}),
         };
 
         console.log('sending connection message with ' + ssid + ':' + passkey);
@@ -100,7 +100,7 @@ export default function DeviceInformation() {
             const passkey = searchParams.get('passkey');
 
             if (ssid != null && passkey != null && !isBlank(ssid)) {
-                attemptConnection(ssid, passkey);
+                attemptConnection(ssid, passkey, deviceInfo);
             } else {
                 alert(
                     'SSID or network passkey not specified.  Return to network selection and try again.'
