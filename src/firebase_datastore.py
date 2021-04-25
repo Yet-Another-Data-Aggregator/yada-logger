@@ -163,6 +163,7 @@ class FireDatastore(Datastore):
 
     def fetch_template(self):
         global template_id
+        self.logger_snapshot = self.db.collection("Loggers").document(logger_id).get()
         template_id = self.logger_snapshot.to_dict()["channelTemplate"]
 
         if template_id == "" or template_id is None:
