@@ -44,7 +44,7 @@ export default function DeviceInformation() {
         }
     }
 
-    function saveDeviceInfo(devname: string, siteid: string) {
+    function saveDeviceInfo(devname: string, siteid: string, ip:string, mac:string) {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -52,6 +52,8 @@ export default function DeviceInformation() {
                 name: devname,
                 siteid: siteid,
                 notes: notes,
+                ip: ip,
+                mac: mac
             }),
         };
 
@@ -70,11 +72,11 @@ export default function DeviceInformation() {
             });
     }
 
-    function attemptConnection(ssid: string, passkey: string, deviceInfo: any) {
+    function attemptConnection(ssid: string, passkey: string) {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey, ip: deviceInfo?.address, mac: deviceInfo?.mac}),
+            body: JSON.stringify({ wifi_ssid: ssid, wifi_passcode: passkey}),
         };
 
         console.log('sending connection message with ' + ssid + ':' + passkey);
@@ -94,7 +96,7 @@ export default function DeviceInformation() {
         if (!isBlank(deviceName)) {
             console.log('Saving device name: ' + deviceName);
             console.log('Saving site id: ' + siteId);
-            saveDeviceInfo(deviceName, siteId);
+            saveDeviceInfo(deviceName, siteId, deviceInfo?.ip, deviceInfo?.mac);
 
             const ssid = searchParams.get('ssid');
             const passkey = searchParams.get('passkey');
