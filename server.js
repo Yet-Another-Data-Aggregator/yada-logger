@@ -48,7 +48,8 @@ function cleanIPv6Info(wifiInfo){
 function saveIPandMACConfig(){
     
     //update ip and mac in config
-    const wifiInfo = cleanIPv6Info(os.networkInterfaces()['wlan0']);
+    const wifiInfo = os.networkInterfaces()['wlan0'];
+    const cleanInfo = cleanIPv6Info(wifiInfo);
 
     console.log(JSON.stringify(wifiInfo));
 
