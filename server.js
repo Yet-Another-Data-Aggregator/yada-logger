@@ -38,6 +38,8 @@ function saveIPandMACConfig(){
     //update ip and mac in config
     const wifiInfo = os.networkInterfaces()['wlan0'];
 
+    if (wifiInfo){
+
             console.log('Saving new IP (' + wifiInfo[0].address  + ') and MAC (' + wifiInfo[0].mac + ') to config');
 
             var config = ini.parse(fs.readFileSync(configPath, 'utf-8'));
@@ -48,6 +50,7 @@ function saveIPandMACConfig(){
             fs.writeFileSync(configPath, ini.stringify(config));
 
             console.log('wrote changes to config.ini');
+    }
 }
 
 function checkWifiEnabledFallbackToAP() {
