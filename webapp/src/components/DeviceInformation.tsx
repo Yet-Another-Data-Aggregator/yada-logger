@@ -102,7 +102,7 @@ export default function DeviceInformation() {
             const passkey = searchParams.get('passkey');
 
             if (ssid != null && passkey != null && !isBlank(ssid)) {
-                attemptConnection(ssid, passkey, deviceInfo);
+                attemptConnection(ssid, passkey);
             } else {
                 alert(
                     'SSID or network passkey not specified.  Return to network selection and try again.'
