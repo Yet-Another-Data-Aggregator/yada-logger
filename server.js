@@ -33,28 +33,8 @@ function log_error_send_success_with(success_obj, error, response) {
     response.end();
 }
 
-function checkWifiEnabledFallbackToAP() {
-    //Check if we are currently connected to a wifi network
-    wifi_manager.is_wifi_enabled(function (error, result_ip) {
-        if (result_ip) {
-            console.log('\nWifi is enabled. IP:' + result_ip);
-            
-        } else {
-            console.log(
-                '\nWifi is not enabled, Enabling AP for self-configure'
-            );
-
-            //enable AP so we can configure wifi
-            wifi_manager.enable_ap_mode(ap_ssid, function (error) {
-                if (error) {
-                    console.log('... AP Enable ERROR: ' + error);
-                } else {
-                    console.log('... AP Enable Success!');
-                }
-            });
-        }
-    });
-
+function saveIPandMACConfig(){
+    
     //update ip and mac in config
     const wifiInfo = os.networkInterfaces()['wlan0'];
 
@@ -68,6 +48,32 @@ function checkWifiEnabledFallbackToAP() {
             fs.writeFileSync(configPath, ini.stringify(config));
 
             console.log('wrote changes to config.ini');
+}
+
+function checkWifiEnabledFallbackToAP() {
+    //Check if we are currently connected to a wifi network
+    wifi_manager.is_wifi_enabled(function (error, result_ip) {
+        if (result_ip) {
+            console.log('\nWifi is enabled. IP:' + result_ip);
+            saveIPandMACConfig();
+        } else {
+            console.log(
+                '\nWifi is not enabled, Enabling AP for self-configure'
+            );
+
+            saveIPandMACConfig();
+
+            //enable AP so we can configure wifi
+            wifi_manager.enable_ap_mode(ap_ssid, function (error) {
+                if (error) {
+                    console.log('... AP Enable ERROR: ' + error);
+                } else {
+                    console.log('... AP Enable Success!');
+                }
+            });
+        }
+    });
+
 }
 
 /*******ROUTE HANDLERS****************/
