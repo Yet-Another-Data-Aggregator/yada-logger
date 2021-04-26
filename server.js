@@ -38,19 +38,6 @@ function checkWifiEnabledFallbackToAP() {
     wifi_manager.is_wifi_enabled(function (error, result_ip) {
         if (result_ip) {
             console.log('\nWifi is enabled. IP:' + result_ip);
-
-            const wifiInfo = os.networkInterfaces()['wlan0'];
-
-            console.log('Saving new IP (' + wifiInfo.address  + ') and MAC (' + wifiInfo.mac + ') to config');
-
-            var config = ini.parse(fs.readFileSync(configPath, 'utf-8'));
-
-            config.config.ip = wifiInfo.address;
-            config.config.mac = wifiInfo.mac;
-
-            fs.writeFileSync(configPath, ini.stringify(config));
-
-            console.log('wrote changes to config.ini');
             
         } else {
             console.log(
@@ -67,6 +54,20 @@ function checkWifiEnabledFallbackToAP() {
             });
         }
     });
+
+    //update ip and mac in config
+    const wifiInfo = os.networkInterfaces()['wlan0'];
+
+            console.log('Saving new IP (' + wifiInfo.address  + ') and MAC (' + wifiInfo.mac + ') to config');
+
+            var config = ini.parse(fs.readFileSync(configPath, 'utf-8'));
+
+            config.config.ip = wifiInfo.address;
+            config.config.mac = wifiInfo.mac;
+
+            fs.writeFileSync(configPath, ini.stringify(config));
+
+            console.log('wrote changes to config.ini');
 }
 
 /*******ROUTE HANDLERS****************/
