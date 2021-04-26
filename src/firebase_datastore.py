@@ -121,6 +121,16 @@ class FireDatastore(Datastore):
         return template_modified_date < datetime.strptime(date_string, template_modified_date_format)
 
     def fetch(self):
+        while self.template_snapshot is None or template_id == "":
+            self.fetch_template()
+
+            if self.template_snapshot is None or template_id == "":
+                time.sleep(5)
+
+        self.fetch_channels()
+
+        Config.write_changes()
+
         # Update other parameters if they have changed
         snapshot = self.logger_snapshot.to_dict()
         if Config.get()["config"]["notes"] != snapshot["notes"]:
@@ -131,16 +141,6 @@ class FireDatastore(Datastore):
             self.update_ip()
         if Config.get()["config"]["devname"] != snapshot["devname"]:
             self.update_devname()
-
-        while self.template_snapshot is None or template_id == "":
-            self.fetch_template()
-
-            if self.template_snapshot is None or template_id == "":
-                time.sleep(5)
-
-        self.fetch_channels()
-
-        Config.write_changes()
 
     def update_notes(self):
         self.db.collection("Loggers").document(logger_id).update({
