@@ -1,6 +1,7 @@
 .networkConnection {
     display: flex;
     flex-direction: column;
+    height: 100%;
 
     h1 {
         @include mediumSmallTitle;
