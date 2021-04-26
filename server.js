@@ -38,7 +38,7 @@ function cleanIPv6Info(wifiInfo){
 
     var cleanWifiInfo = [];
 
-    for(info in wifiInfo){
+    for([index, info] in wifiInfo){
         console.log(JSON.stringify(info));
 
         if(info.family === 'IPv4'){
