@@ -34,6 +34,8 @@ function log_error_send_success_with(success_obj, error, response) {
 }
 
 function cleanIPv6Info(wifiInfo){
+    console.log(JSON.stringify(wifiInfo));
+
     var cleanWifiInfo = [];
 
     for(info in wifiInfo){
@@ -48,10 +50,9 @@ function cleanIPv6Info(wifiInfo){
 function saveIPandMACConfig(){
     
     //update ip and mac in config
-    const wifiInfo = os.networkInterfaces()['wlan0'];
-    const cleanInfo = cleanIPv6Info(wifiInfo);
+    const wifiInfo = cleanIPv6Info(os.networkInterfaces()['wlan0']);
 
-    console.log(JSON.stringify(cleanInfo));
+    console.log(JSON.stringify(wifiInfo));
 
     if (wifiInfo[0]){
 
