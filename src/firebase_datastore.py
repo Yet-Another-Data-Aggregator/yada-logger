@@ -131,10 +131,12 @@ class FireDatastore(Datastore):
 
         Config.write_changes()
 
+    def check_values(self):
         # Update other parameters if they have changed
         snapshot = self.logger_snapshot.to_dict()
+        Config.parse()
 
-        print(snapshot)
+        print(Config.get())
 
         if Config.get()["config"]["notes"] != snapshot["notes"]:
             self.update_notes()

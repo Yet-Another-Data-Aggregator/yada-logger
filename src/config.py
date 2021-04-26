@@ -59,6 +59,10 @@ class Config:
         return Config.config
 
     @staticmethod
+    def parse():
+        Config.config = parse_config_file(CONFIG_FILE)
+
+    @staticmethod
     def write_changes():
         """
         Writes any changes to the configuration file.

@@ -74,6 +74,8 @@ def check_update():
     Checks whether the channels need updating. If not, this function returns without doing anything, if so, the new
     channels are fetched and the running and restart variables are set to reload the application.
     """
+    datastore.check_values()
+
     if not datastore.should_update_template():
         return
 
@@ -106,6 +108,7 @@ def network_run():
         time.sleep(5)
 
         if time.time() - now > template_update_interval:
+            print("Fetching")
             now = time.time()
             check_update()
 

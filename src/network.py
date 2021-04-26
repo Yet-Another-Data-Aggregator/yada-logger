@@ -55,3 +55,7 @@ class Datastore:
 
         :param faults: The list of faults to upload.
         """
+        pass
+
+    def check_values(self):
+        pass
