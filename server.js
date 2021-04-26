@@ -33,13 +33,23 @@ function log_error_send_success_with(success_obj, error, response) {
     response.end();
 }
 
+function isIterable(obj) {
+    // checks for null and undefined
+    if (obj == null) {
+      return false;
+    }
+    return typeof obj[Symbol.iterator] === 'function';
+  }
+
 function cleanIPv6Info(wifiInfo){
     var cleanWifiInfo = [];
 
+    if(isIterable(wifiInfo)){
     for(info of wifiInfo){
         if(info && info.family === 'IPv4'){
             cleanWifiInfo.push(info);
         }
+    }
     }
 
     return cleanWifiInfo;
