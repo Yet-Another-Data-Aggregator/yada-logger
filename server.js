@@ -7,6 +7,7 @@ const ini = require('ini');
 const wifi_manager = require('./wifi_manager')();
 const iwlist = require('./iwlist');
 var bodyParser = require('body-parser'); //needed to get data from body of POST requests
+const { info } = require('node:console');
 const app = express();
 
 const ap_ssid = 'RASPI-AP';
@@ -33,10 +34,22 @@ function log_error_send_success_with(success_obj, error, response) {
     response.end();
 }
 
+function cleanIPv6Info(wifiInfo){
+    var cleanWifiInfo = [];
+
+    for(info in wifiInfo){
+        if(info.family === 'IPv4'){
+            cleanWifiInfo.push(info);
+        }
+    }
+
+    return cleanWifiInfo;
+}
+
 function saveIPandMACConfig(){
     
     //update ip and mac in config
-    const wifiInfo = os.networkInterfaces()['wlan0'];
+    const wifiInfo = cleanWifiInfo(os.networkInterfaces()['wlan0']);
 
     if (wifiInfo[0]){
 
