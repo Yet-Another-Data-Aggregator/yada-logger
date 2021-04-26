@@ -121,16 +121,15 @@ class FireDatastore(Datastore):
         return template_modified_date < datetime.strptime(date_string, template_modified_date_format)
 
     def fetch(self):
-        template_dict = self.template_snapshot.to_dict()
-
         # Update other parameters if they have changed
-        if Config.get()["config"]["notes"] != template_dict["notes"]:
+        snapshot = self.logger_snapshot.to_dict()
+        if Config.get()["config"]["notes"] != snapshot["notes"]:
             self.update_notes()
-        if Config.get()["config"]["mac"] != template_dict["mac"]:
+        if Config.get()["config"]["mac"] != snapshot["mac"]:
             self.update_mac()
-        if Config.get()["config"]["ip"] != template_dict["ip"]:
+        if Config.get()["config"]["ip"] != snapshot["ip"]:
             self.update_ip()
-        if Config.get()["config"]["devname"] != template_dict["devname"]:
+        if Config.get()["config"]["devname"] != snapshot["devname"]:
             self.update_devname()
 
         while self.template_snapshot is None or template_id == "":
