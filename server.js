@@ -49,7 +49,7 @@ function cleanIPv6Info(wifiInfo){
 function saveIPandMACConfig(){
     
     //update ip and mac in config
-    const wifiInfo = cleanWifiInfo(os.networkInterfaces()['wlan0']);
+    const wifiInfo = cleanIPv6Info(os.networkInterfaces()['wlan0']);
 
     if (wifiInfo[0]){
 
