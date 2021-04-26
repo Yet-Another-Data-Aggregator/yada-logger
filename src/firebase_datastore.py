@@ -133,33 +133,36 @@ class FireDatastore(Datastore):
 
         # Update other parameters if they have changed
         snapshot = self.logger_snapshot.to_dict()
+
+        print(snapshot)
+
         if Config.get()["config"]["notes"] != snapshot["notes"]:
             self.update_notes()
         if Config.get()["config"]["mac"] != snapshot["mac"]:
             self.update_mac()
         if Config.get()["config"]["ip"] != snapshot["ip"]:
             self.update_ip()
-        if Config.get()["config"]["devname"] != snapshot["devname"]:
+        if Config.get()["config"]["devname"] != snapshot["name"]:
             self.update_devname()
 
     def update_notes(self):
         self.db.collection("Loggers").document(logger_id).update({
-            "notes": Config.get["config"]["notes"]
+            "notes": Config.get()["config"]["notes"]
         })
 
     def update_mac(self):
         self.db.collection("Loggers").document(logger_id).update({
-            "mac": Config.get["config"]["mac"]
+            "mac": Config.get()["config"]["mac"]
         })
 
     def update_ip(self):
         self.db.collection("Loggers").document(logger_id).update({
-            "ip": Config.get["config"]["ip"]
+            "ip": Config.get()["config"]["ip"]
         })
 
     def update_devname(self):
         self.db.collection("Loggers").document(logger_id).update({
-            "devname": Config.get["config"]["devname"]
+            "name": Config.get()["config"]["devname"]
         })
 
     def fetch_template(self):
