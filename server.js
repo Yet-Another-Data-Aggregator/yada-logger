@@ -34,14 +34,9 @@ function log_error_send_success_with(success_obj, error, response) {
 }
 
 function cleanIPv6Info(wifiInfo){
-    
-    console.log(JSON.stringify(wifiInfo));
-
     var cleanWifiInfo = [];
 
     for(info of wifiInfo){
-        console.log(JSON.stringify(info));
-
         if(info && info.family === 'IPv4'){
             cleanWifiInfo.push(info);
         }
