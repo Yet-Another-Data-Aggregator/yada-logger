@@ -7,7 +7,6 @@ const ini = require('ini');
 const wifi_manager = require('./wifi_manager')();
 const iwlist = require('./iwlist');
 var bodyParser = require('body-parser'); //needed to get data from body of POST requests
-const { info } = require('node:console');
 const app = express();
 
 const ap_ssid = 'RASPI-AP';
