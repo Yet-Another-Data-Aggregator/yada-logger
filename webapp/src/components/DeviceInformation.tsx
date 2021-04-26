@@ -96,7 +96,7 @@ export default function DeviceInformation() {
         if (!isBlank(deviceName)) {
             console.log('Saving device name: ' + deviceName);
             console.log('Saving site id: ' + siteId);
-            saveDeviceInfo(deviceName, siteId, deviceInfo?.ip, deviceInfo?.mac);
+            saveDeviceInfo(deviceName, siteId, deviceInfo?.address, deviceInfo?.mac);
 
             const ssid = searchParams.get('ssid');
             const passkey = searchParams.get('passkey');
